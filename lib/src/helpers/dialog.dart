@@ -1,3 +1,5 @@
+import 'dart:async' show Future;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -7,18 +9,10 @@ Future<T> _showAlert<T>({BuildContext context, Widget child}) => showDialog<T>(
       builder: (BuildContext context) => child,
     );
 
-Future<bool> showAlert(BuildContext context,
-        {String title,
-        String negativeText = "Cancel",
-        String positiveText = "Confirm",
-        bool onlyPositive = false}) =>
+Future<bool> showAlert(BuildContext context,{String title,String negativeText = "Cancel",String positiveText = "Confirm",bool onlyPositive = false}) =>
     _showAlert<bool>(
       context: context,
-      child: CupertinoAlertDialog(
-        title: Text(title),
-        actions: _buildAlertActions(
-            context, onlyPositive, negativeText, positiveText),
-      ),
+      child: CupertinoAlertDialog(title: Text(title),actions: _buildAlertActions(context, onlyPositive, negativeText, positiveText),),
     );
 
 List<Widget> _buildAlertActions(BuildContext context, bool onlyPositive, String negativeText, String positiveText) {
@@ -61,12 +55,8 @@ List<Widget> _buildAlertActions(BuildContext context, bool onlyPositive, String 
   }
 }
 
-Future _showLoadingDialog(BuildContext c, LoadingDialog loading,
-        {bool cancelable = true}) =>
-    showDialog(
-        context: c,
-        barrierDismissible: cancelable,
-        builder: (BuildContext c) => loading);
+Future _showLoadingDialog(BuildContext c, LoadingDialog loading,{bool cancelable = true}) =>
+        showDialog(context: c,barrierDismissible: cancelable,builder: (BuildContext c) => loading);
 
 /// 加载框
 class LoadingDialog extends CupertinoAlertDialog {
