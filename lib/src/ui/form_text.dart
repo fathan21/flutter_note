@@ -62,7 +62,7 @@ class _FormTextState extends State<FormTextPage> {
           ),
           IconButton(
             icon: const Icon(Icons.delete),
-            tooltip: 'Alarm',
+            tooltip: 'Delete',
             onPressed: () {
               this._deleteNote();
             },
@@ -70,7 +70,18 @@ class _FormTextState extends State<FormTextPage> {
           IconButton(
             icon: const Icon(Icons.alarm),
             tooltip: 'Alarm',
-            onPressed: () {},
+            onPressed: () {
+              selectedDate(context).then((onValue)=>{
+                if (onValue != null) {
+                  selectedTime24Hour(context).then((od)=>{
+                    if (od != null) {
+                      print(od.toString() + onValue.toString() )
+                    }
+                  })
+                }
+              });
+              // selectedTime24Hour(context);
+            },
           ),
           IconButton(
             icon: const Icon(Icons.color_lens),
@@ -129,3 +140,27 @@ class _FormTextState extends State<FormTextPage> {
     );
   }
 }
+
+Future<DateTime> selectedDate(BuildContext context) async => showDatePicker(
+  context: context,
+  initialDate: DateTime.now(),
+  firstDate: DateTime(2018),
+  lastDate: DateTime(2030),
+  builder: (BuildContext context, Widget child) {
+    return Theme(
+      data: ThemeData.dark(),
+      child: child,
+    );
+  },
+);
+
+Future<TimeOfDay> selectedTime24Hour(BuildContext context) async => showTimePicker(
+  context: context,
+  initialTime: TimeOfDay(hour: 10, minute: 47),
+  builder: (BuildContext context, Widget child) {
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+      child: child,
+    );
+  },
+);

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:note_f/src/bloc/bloc_provider.dart';
 import 'package:note_f/src/bloc/note_bloc.dart';
-import 'package:note_f/src/model/note.dart';
-import 'package:note_f/src/ui/form_list.dart';
-import 'package:note_f/src/ui/form_text.dart';
 import 'package:note_f/src/ui/home.dart';
 
 void main() => runApp(MyApp());
@@ -24,7 +21,6 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
         '/': (context) => MyHomePage(title: 'note'),
-        '/form_list': (context) => FormListPage(),
         },
       ),
     );
