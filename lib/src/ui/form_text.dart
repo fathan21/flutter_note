@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:note_f/src/bloc/bloc_provider.dart';
 import 'package:note_f/src/bloc/note_bloc.dart';
+import 'package:note_f/src/helpers/picker.dart';
 import 'package:note_f/src/model/note.dart';
 
 class FormTextPage extends StatefulWidget {
@@ -72,7 +73,7 @@ class _FormTextState extends State<FormTextPage> {
             tooltip: 'Alarm',
             onPressed: () {
               selectedDate(context).then((onValue)=>{
-                if (onValue != null) {
+                if (onValue != null) {  
                   selectedTime24Hour(context).then((od)=>{
                     if (od != null) {
                       print(od.toString() + onValue.toString() )
@@ -86,7 +87,11 @@ class _FormTextState extends State<FormTextPage> {
           IconButton(
             icon: const Icon(Icons.color_lens),
             tooltip: 'Warna',
-            onPressed: () {},
+            onPressed: () {
+              colorPicker(context).then((dt)=>{
+                hexToColor(dt)
+              });
+            },
           ),
         ],
       ),
@@ -140,27 +145,7 @@ class _FormTextState extends State<FormTextPage> {
     );
   }
 }
+Color hexToColor(String code) {
+  return new Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
+}
 
-Future<DateTime> selectedDate(BuildContext context) async => showDatePicker(
-  context: context,
-  initialDate: DateTime.now(),
-  firstDate: DateTime(2018),
-  lastDate: DateTime(2030),
-  builder: (BuildContext context, Widget child) {
-    return Theme(
-      data: ThemeData.dark(),
-      child: child,
-    );
-  },
-);
-
-Future<TimeOfDay> selectedTime24Hour(BuildContext context) async => showTimePicker(
-  context: context,
-  initialTime: TimeOfDay(hour: 10, minute: 47),
-  builder: (BuildContext context, Widget child) {
-    return MediaQuery(
-      data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-      child: child,
-    );
-  },
-);

@@ -7,6 +7,8 @@ class Note {
     String updated_at;
     String deleted_at;
     int is_archive;
+    String color;
+    String alarm;
 
     Note({
         this.id,
@@ -15,7 +17,9 @@ class Note {
         this.created_at,
         this.updated_at,
         this.deleted_at,
-        this.is_archive
+        this.is_archive,
+        this.alarm,
+        this.color
     });
 
     // Create a Note from JSON data
@@ -27,6 +31,8 @@ class Note {
         updated_at: json["updated_at"],
         deleted_at: json["deleted_at"],
         is_archive: json["is_archive"],
+        color: json["color"],
+        alarm: json["alarm"]
     );
 
     // Convert our Note to JSON to make it easier when we store it in the database
@@ -34,6 +40,8 @@ class Note {
         "id": id,
         "title":title,
         "content": content,
-        "created_at": created_at
+        "created_at": created_at,
+        "color": color,
+        "alarm": alarm
     };
 }
