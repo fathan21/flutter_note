@@ -5,9 +5,9 @@ import 'package:note_f/src/helpers/picker.dart';
 import 'package:note_f/src/model/note.dart';
 
 class FormTextPage extends StatefulWidget {
-  FormTextPage({Key key, @required this.note}) : super();
+  FormTextPage({Key key, @required this.id}) : super();
 
-  final Note note;
+  final int id;
 
   @override
   _FormTextState createState() => _FormTextState();
@@ -19,12 +19,28 @@ class _FormTextState extends State<FormTextPage> {
   NotesBloc _notesBloc;
   Color _colorCtrl = Colors.blue;
   DateTime _alrmCtrl = new DateTime.now().add(Duration(hours: 2));
+  int setAlarm = 0;
   @override
   void initState() {
     super.initState();
     _notesBloc = BlocProvider.of<NotesBloc>(context);
-    _contentCtrl.text = widget.note.content;
-    _titleCtrl.text = widget.note.title;
+    _getNote(widget.id);
+  }
+
+  Future _getNote(id) async {
+    if (id == 0) {
+    } else {
+      var note = await _notesBloc.inGetNote(id);
+      _titleCtrl.text = note.title;
+      _contentCtrl.text = note.content;
+      setState(() {
+        _colorCtrl = new Color(note.color.toInt());
+        if (note.alarm != null) {
+          _alrmCtrl = DateTime.parse(note.alarm);
+          setAlarm = 1;
+        }
+      });
+    }
   }
 
   Future _saveNote() async {
@@ -32,10 +48,10 @@ class _FormTextState extends State<FormTextPage> {
     _note.content = _contentCtrl.text;
     _note.title = _titleCtrl.text;
     _note.color = _colorCtrl.value;
-    _note.alarm = _alrmCtrl.toString();
-    
-    if (widget.note.id != null) {
-      _note.id = widget.note.id;
+    _note.alarm = setAlarm == 1 ? _alrmCtrl.toString() : null;
+
+    if (widget.id != 0) {
+      _note.id = widget.id;
       _notesBloc.inSaveNote.add(_note);
     } else {
       _notesBloc.inAddNote.add(_note);
@@ -44,14 +60,16 @@ class _FormTextState extends State<FormTextPage> {
   }
 
   Future _deleteNote() async {
-    _notesBloc.inDeleteNote.add(widget.note.id);
+    _notesBloc.inDeleteNote.add(widget.id);
     Navigator.pop(context);
   }
-  
+
   Future _setAlarmData(DateTime dateTime, TimeOfDay time) async {
-    var newDatetime = dateTime.add(Duration(hours: time.hour, minutes: time.minute, seconds: 0));
+    var newDatetime = dateTime
+        .add(Duration(hours: time.hour, minutes: time.minute, seconds: 0));
     setState(() {
-     _alrmCtrl = newDatetime; 
+      _alrmCtrl = newDatetime;
+      setAlarm = 1;
     });
   }
 
@@ -77,30 +95,34 @@ class _FormTextState extends State<FormTextPage> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.delete),
+            icon: new Icon(Icons.delete),
             tooltip: 'Delete',
             onPressed: () {
               this._deleteNote();
             },
           ),
           IconButton(
-            icon: const Icon(Icons.alarm),
+            icon: new Icon(Icons.alarm, color: (setAlarm == 1? Colors.yellow:Colors.white),),
             tooltip: 'Alarm',
             onPressed: () {
-              selectedDate(context, initialDate: _alrmCtrl).then((DateTime alarmData) => {
-                    if (alarmData != null)
-                      {
-                        selectedTime24Hour(context, initialTime: TimeOfDay.fromDateTime(_alrmCtrl))
-                            .then((TimeOfDay od) => {if (od != null) {
-                                _setAlarmData(alarmData, od)
-                            }})
-                      }
-                  });
+              selectedDate(context, initialDate: _alrmCtrl)
+                  .then((DateTime alarmData) => {
+                        if (alarmData != null)
+                          {
+                            selectedTime24Hour(context,
+                                    initialTime:
+                                        TimeOfDay.fromDateTime(_alrmCtrl))
+                                .then((TimeOfDay od) => {
+                                      if (od != null)
+                                        {_setAlarmData(alarmData, od)}
+                                    })
+                          }
+                      });
               // selectedTime24Hour(context);
             },
           ),
           IconButton(
-            icon: const Icon(Icons.color_lens),
+            icon: new Icon(Icons.color_lens, color: _colorCtrl),
             tooltip: 'Warna',
             onPressed: () {
               colorPicker(context, currentColor: _colorCtrl)
@@ -116,7 +138,7 @@ class _FormTextState extends State<FormTextPage> {
           color: Colors.grey[100],
           child: Column(
             children: <Widget>[
-              Text( 'Alaram: ' + _alrmCtrl.toString()),
+              Text(setAlarm == 1 ? 'Alaram: ' + _alrmCtrl.toString() : ''),
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,

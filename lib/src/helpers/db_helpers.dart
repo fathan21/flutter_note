@@ -49,7 +49,7 @@ class DBProvider {
     // Check if the database exists
     var exists = await databaseExists(path);
 
-    //if (!exists) {
+    if (!exists) {
       // Should happen only the first time you launch your application
       print("Creating new copy from asset");
 
@@ -65,9 +65,9 @@ class DBProvider {
 
       // Write and flush the bytes written
       await File(path).writeAsBytes(bytes, flush: true);
-    //} else {
+    } else {
       print("Opening existing database");
-    //}
+    }
     // open the database
     var db = await openDatabase(path, readOnly: false);
     return db;

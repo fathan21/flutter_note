@@ -197,12 +197,11 @@ Future dialogAddNote(BuildContext c) => showDialog(
                   style: styleBtn,
                 ), //`Text` to display
                 onPressed: () {
-                  Note note = new Note(title: '', content: '');
                   Navigator.pop(c, true);
                   Navigator.push(
                     c,
                     MaterialPageRoute(
-                        builder: (c) => new FormTextPage(note: note)),
+                        builder: (c) => new FormTextPage(id: 0)),
                   );
                 },
               ),
@@ -240,7 +239,7 @@ class GridNoteListWidget extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => new FormTextPage(note: data)),
+                    builder: (context) => new FormTextPage(id: data.id)),
               );
             },
             child: GridNoteItemWidget(data));
@@ -258,14 +257,17 @@ class GridNoteItemWidget extends StatelessWidget {
     Color newCl = new Color(data.color.toInt());
     return Container(
       padding: EdgeInsets.all(0.0),
-      decoration: BoxDecoration(border: Border.all(color: Colors.blueAccent)),
+      decoration: BoxDecoration(
+        border: Border.all(color: newCl),
+        color: newCl
+      ),
       child: Column(
         children: <Widget>[
           Text(data.title.toString()),
           Text(data.color.toString()),
         ],
       ),
-      color: newCl,//new Color(data.color.toInt()),
+      // color: newCl,//new Color(data.color.toInt()),
       margin: EdgeInsets.all(10.0),
     );
   }
