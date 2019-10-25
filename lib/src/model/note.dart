@@ -7,7 +7,7 @@ class Note {
     String updated_at;
     String deleted_at;
     int is_archive;
-    String color;
+    int color;
     String alarm;
 
     Note({

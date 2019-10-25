@@ -167,17 +167,12 @@ Future _showNotificationSchedule() async {
   var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
   NotificationDetails platformChannelSpecifics = new NotificationDetails(
       androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-      
-  await flutterLocalNotificationsPlugin.schedule(
-      0,
-      'scheduled kukuk',
-      'scheduled body',
-      scheduledNotificationDateTime,
-      platformChannelSpecifics,
+
+  await flutterLocalNotificationsPlugin.schedule(0, 'scheduled kukuk',
+      'scheduled body', scheduledNotificationDateTime, platformChannelSpecifics,
       payload: 'Default_Sound');
-  
+
   print('sceduelu notif ' + scheduledNotificationDateTime.toString());
-  
 }
 
 Future dialogAddNote(BuildContext c) => showDialog(
@@ -237,7 +232,7 @@ class GridNoteListWidget extends StatelessWidget {
     return GridView.count(
       scrollDirection: Axis.vertical,
       controller: ScrollController(),
-      crossAxisCount: 4,
+      crossAxisCount: 3,
       children: List.generate(datas.length, (index) {
         var data = datas[index];
         return GestureDetector(
@@ -260,22 +255,17 @@ class GridNoteItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color newCl = new Color(data.color.toInt());
     return Container(
-      padding: EdgeInsets.all(20.0),
-      child: Center(
-        child: GridTile(
-          footer: Text(
-            data.title.toString(),
-            textAlign: TextAlign.center,
-          ),
-          header: Text(
-            data.created_at.toString(),
-            textAlign: TextAlign.center,
-          ),
-          child: Icon(Icons.access_alarm, size: 40.0, color: Colors.white30),
-        ),
+      padding: EdgeInsets.all(0.0),
+      decoration: BoxDecoration(border: Border.all(color: Colors.blueAccent)),
+      child: Column(
+        children: <Widget>[
+          Text(data.title.toString()),
+          Text(data.color.toString()),
+        ],
       ),
-      color: Colors.blue[400],
+      color: newCl,//new Color(data.color.toInt()),
       margin: EdgeInsets.all(10.0),
     );
   }
