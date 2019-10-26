@@ -3,9 +3,6 @@ import 'package:note_f/src/bloc/bloc_provider.dart';
 import 'package:note_f/src/bloc/note_bloc.dart';
 import 'package:note_f/src/model/note.dart';
 import 'package:note_f/src/ui/form_text.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
-FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -22,22 +19,12 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _notesBloc = BlocProvider.of<NotesBloc>(context);
-
-    // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
-    // If you have skipped STEP 3 then change app_icon to @mipmap/ic_launcher
-    var initializationSettingsAndroid =
-        new AndroidInitializationSettings('app_icon');
-    var initializationSettingsIOS = new IOSInitializationSettings();
-    var initializationSettings = new InitializationSettings(
-        initializationSettingsAndroid, initializationSettingsIOS);
-    flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-    flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: onSelectNotification);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(child: ListDrawer()),
       appBar: AppBar(
         title: Text(widget.title),
         actions: <Widget>[
@@ -49,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           IconButton(
             icon: Icon(Icons.search),
-            onPressed: _showNotificationSchedule,
+            onPressed: () {},
           )
         ],
       ),
@@ -70,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     // If there are no notes (data), display this message.
 
                     if (snapshot.data.length == 0) {
-                      return Text('No notes');
+                      return GridNoteEmptyWidget();
                     }
 
                     List<Note> notes = snapshot.data;
@@ -87,92 +74,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-
-  Future onSelectNotification(String payload) async {
-    showDialog(
-      context: context,
-      builder: (_) {
-        return new AlertDialog(
-          title: Text("PayLoad"),
-          content: Text("Payload : $payload"),
-        );
-      },
-    );
-  }
-}
-
-// Method 1
-Future _showNotificationWithSound() async {
-  var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-      'your channel id', 'your channel name', 'your channel description',
-      sound: 'slow_spring_board',
-      importance: Importance.Max,
-      priority: Priority.High);
-  var iOSPlatformChannelSpecifics =
-      new IOSNotificationDetails(sound: "slow_spring_board.aiff");
-  var platformChannelSpecifics = new NotificationDetails(
-      androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-  await flutterLocalNotificationsPlugin.show(
-    0,
-    'New Post',
-    'How to Show Notification in Flutter',
-    platformChannelSpecifics,
-    payload: 'Custom_Sound',
-  );
-}
-
-// Method 2
-Future _showNotificationWithDefaultSound() async {
-  var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-      'your channel id', 'your channel name', 'your channel description',
-      importance: Importance.Max, priority: Priority.High);
-  var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-  var platformChannelSpecifics = new NotificationDetails(
-      androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-  await flutterLocalNotificationsPlugin.show(
-    0,
-    'New Post',
-    'How to Show Notification in Flutter',
-    platformChannelSpecifics,
-    payload: 'Default_Sound',
-  );
-}
-
-// Method 3
-Future _showNotificationWithoutSound() async {
-  var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-      'your channel id', 'your channel name', 'your channel description',
-      playSound: false, importance: Importance.Max, priority: Priority.High);
-  var iOSPlatformChannelSpecifics =
-      new IOSNotificationDetails(presentSound: false);
-  var platformChannelSpecifics = new NotificationDetails(
-      androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-  await flutterLocalNotificationsPlugin.show(
-    0,
-    'New Post',
-    'How to Show Notification in Flutter',
-    platformChannelSpecifics,
-    payload: 'No_Sound',
-  );
-}
-
-// Method 4 schedulue
-Future _showNotificationSchedule() async {
-  var scheduledNotificationDateTime =
-      new DateTime.now().add(new Duration(seconds: 15));
-  var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-      'your other channel id',
-      'your other channel name',
-      'your other channel description');
-  var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-  NotificationDetails platformChannelSpecifics = new NotificationDetails(
-      androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-
-  await flutterLocalNotificationsPlugin.schedule(0, 'scheduled kukuk',
-      'scheduled body', scheduledNotificationDateTime, platformChannelSpecifics,
-      payload: 'Default_Sound');
-
-  print('sceduelu notif ' + scheduledNotificationDateTime.toString());
 }
 
 Future dialogAddNote(BuildContext c) => showDialog(
@@ -200,8 +101,7 @@ Future dialogAddNote(BuildContext c) => showDialog(
                   Navigator.pop(c, true);
                   Navigator.push(
                     c,
-                    MaterialPageRoute(
-                        builder: (c) => new FormTextPage(id: 0)),
+                    MaterialPageRoute(builder: (c) => new FormTextPage(id: 0)),
                   );
                 },
               ),
@@ -221,6 +121,42 @@ Future dialogAddNote(BuildContext c) => showDialog(
         );
       },
     );
+
+class ListDrawer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      // Important: Remove any padding from the ListView.
+      padding: EdgeInsets.zero,
+      children: <Widget>[
+        DrawerHeader(
+          child: Text('Drawer Header'),
+          decoration: BoxDecoration(
+            color: Colors.amber,
+          ),
+        ),
+        ListTile(
+          title: Text('Item 1'),
+          onTap: () {
+            // Update the state of the app
+            // ...
+            // Then close the drawer
+            Navigator.pop(context);
+          },
+        ),
+        ListTile(
+          title: Text('Item 2'),
+          onTap: () {
+            // Update the state of the app
+            // ...
+            // Then close the drawer
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+  }
+}
 
 class GridNoteListWidget extends StatelessWidget {
   final List datas;
@@ -257,10 +193,7 @@ class GridNoteItemWidget extends StatelessWidget {
     Color newCl = new Color(data.color.toInt());
     return Container(
       padding: EdgeInsets.all(0.0),
-      decoration: BoxDecoration(
-        border: Border.all(color: newCl),
-        color: newCl
-      ),
+      decoration: BoxDecoration(border: Border.all(color: newCl), color: newCl),
       child: Column(
         children: <Widget>[
           Text(data.title.toString()),
@@ -269,6 +202,31 @@ class GridNoteItemWidget extends StatelessWidget {
       ),
       // color: newCl,//new Color(data.color.toInt()),
       margin: EdgeInsets.all(10.0),
+    );
+  }
+}
+
+class GridNoteEmptyWidget extends StatelessWidget {
+  
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        alignment: Alignment.center,
+        child: GestureDetector(
+          onTap: (){
+            dialogAddNote(context);
+          },
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              new Icon(Icons.book, size:180),
+              new Text('Tambah Catatan', style: TextStyle(fontSize: 30),),
+            ],
+          ),
+        )
+      ),
     );
   }
 }

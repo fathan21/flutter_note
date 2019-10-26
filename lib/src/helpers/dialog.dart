@@ -55,6 +55,7 @@ List<Widget> _buildAlertActions(BuildContext context, bool onlyPositive, String 
   }
 }
 
+/*
 Future _showLoadingDialog(BuildContext c, LoadingDialog loading,{bool cancelable = true}) =>
         showDialog(context: c,barrierDismissible: cancelable,builder: (BuildContext c) => loading);
 
@@ -105,3 +106,5 @@ class LoadingDialog extends CupertinoAlertDialog {
     );
   }
 }
+
+*/

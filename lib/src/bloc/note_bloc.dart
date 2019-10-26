@@ -81,11 +81,5 @@ class NotesBloc implements BlocBase {
     await DBProvider.db.deleteNote(id);
     return getNotes();
   }
-  
-  _handleGetNote(int id) async {
-    var d = await DBProvider.db.getNote(id);
-    print(d.title);
-    return d;
-  }
 }
 

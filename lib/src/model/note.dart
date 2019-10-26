@@ -3,10 +3,10 @@ class Note {
     int id;
     String title;
     String content;
-    String created_at;
-    String updated_at;
-    String deleted_at;
-    int is_archive;
+    String createdAt;
+    String updatedAt;
+    String deletedAt;
+    int isArchive;
     int color;
     String alarm;
 
@@ -14,10 +14,10 @@ class Note {
         this.id,
         this.title,
         this.content,
-        this.created_at,
-        this.updated_at,
-        this.deleted_at,
-        this.is_archive,
+        this.createdAt,
+        this.updatedAt,
+        this.deletedAt,
+        this.isArchive,
         this.alarm,
         this.color
     });
@@ -27,10 +27,10 @@ class Note {
         id: json["id"],
         title: json["title"],
         content: json["content"],
-        created_at: json["created_at"],
-        updated_at: json["updated_at"],
-        deleted_at: json["deleted_at"],
-        is_archive: json["is_archive"],
+        createdAt: json["created_at"],
+        updatedAt: json["updated_at"],
+        deletedAt: json["deleted_at"],
+        isArchive: json["is_archive"],
         color: json["color"],
         alarm: json["alarm"]
     );
@@ -40,7 +40,7 @@ class Note {
         "id": id,
         "title":title,
         "content": content,
-        "created_at": created_at,
+        "created_at": createdAt,
         "color": color,
         "alarm": alarm
     };

@@ -1,0 +1,184 @@
+
+
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix0;
+import 'package:note_f/src/bloc/bloc_provider.dart';
+import 'package:note_f/src/bloc/note_bloc.dart';
+import 'package:note_f/src/helpers/picker.dart';
+import 'package:note_f/src/model/note.dart';
+
+import 'package:zefyr/zefyr.dart';
+
+class FormTextPage extends StatefulWidget {
+  FormTextPage({Key key, @required this.id}) : super();
+
+  final int id;
+
+  @override
+  _FormTextState createState() => _FormTextState();
+}
+
+class _FormTextState extends State<FormTextPage> {
+
+  /// Zefyr editor like any other input field requires a focus node.
+  FocusNode _focusNode;
+
+  TextEditingController _titleCtrl = new TextEditingController();
+  ZefyrController _contentCtrl;
+  NotesBloc _notesBloc;
+  Color _colorCtrl = Colors.blue;
+  DateTime _alrmCtrl = new DateTime.now().add(Duration(hours: 2));
+  int setAlarm = 0;
+  @override
+  void initState() {
+    super.initState();
+    _notesBloc = BlocProvider.of<NotesBloc>(context);
+    _getNote(widget.id);
+    // Here we must load the document and pass it to Zefyr controller.
+    
+      final document = _loadDocument(null);
+      _contentCtrl = ZefyrController(document);
+      _focusNode = FocusNode();
+  }
+    /// Loads the document to be edited in Zefyr.
+  NotusDocument _loadDocument(markdown) {
+    // load a markdown string
+
+    if (markdown == null) {
+      return NotusDocument();
+    }
+    return NotusDocument.fromJson(jsonDecode(markdown));
+    // final Delta delta = Delta()..insert(markdown);
+    // return NotusDocument.fromDelta(delta);
+    // return NotusDocument.fromDelta(notusMarkdown.decode(markdown));
+  }
+
+  Future _getNote(id) async {
+    if (id == 0) {
+    } else {
+      var note = await _notesBloc.inGetNote(id);
+      _titleCtrl.text = note.title;
+      // _contentCtrl = note.content;
+      // notusMarkdown.encode(_notesController.document.toDelta());
+      final dc = note.content;
+       final document = _loadDocument(dc);
+      _contentCtrl = ZefyrController(document);
+      // _focusNode = FocusNode();
+      // print(dt);
+      setState(() {
+        _colorCtrl = new Color(note.color.toInt());
+        if (note.alarm != null) {
+          _alrmCtrl = DateTime.parse(note.alarm);
+          setAlarm = 1;
+        }
+      });
+    }
+  }
+
+  Future _saveNote() async {
+    Note _note = Note();
+    // Delta _delta = _contentCtrl.document.toDelta();
+    // String html = markdownToHtml(notusMarkdown.encode(_delta).toString()); 
+    String html = jsonEncode(_contentCtrl.document);
+    _note.content = html;
+    _note.title = _titleCtrl.text;
+    _note.color = _colorCtrl.value;
+    _note.alarm = setAlarm == 1 ? _alrmCtrl.toString() : null;
+
+    if (widget.id != 0) {
+      _note.id = widget.id;
+      _notesBloc.inSaveNote.add(_note);
+    } else {
+      _notesBloc.inAddNote.add(_note);
+    }
+    Navigator.pop(context);
+  }
+
+  Future _deleteNote() async {
+    _notesBloc.inDeleteNote.add(widget.id);
+    Navigator.pop(context);
+  }
+
+  Future _setAlarmData(DateTime dateTime, TimeOfDay time) async {
+    var newDatetime = dateTime
+        .add(Duration(hours: time.hour, minutes: time.minute, seconds: 0));
+    setState(() {
+      _alrmCtrl = newDatetime;
+      setAlarm = 1;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    InputDecoration _styleInput = InputDecoration(
+      fillColor: _colorCtrl,
+      filled: true,
+      border: InputBorder.none,
+      hintText: 'Text',
+      hintStyle: new TextStyle(color: Colors.grey, fontSize: 20),
+      contentPadding: EdgeInsets.all(16),
+    );
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: _colorCtrl,
+        title: prefix0.Text('Tambah Text'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.save),
+            tooltip: 'Alarm',
+            onPressed: () {
+              this._saveNote();
+            },
+          ),
+          IconButton(
+            icon: new Icon(Icons.delete),
+            tooltip: 'Delete',
+            onPressed: () {
+              this._deleteNote();
+            },
+          ),
+          IconButton(
+            icon: new Icon(Icons.alarm, color: (setAlarm == 1? Colors.yellow:Colors.white),),
+            tooltip: 'Alarm',
+            onPressed: () {
+              selectedDate(context, initialDate: _alrmCtrl)
+                  .then((DateTime alarmData) => {
+                        if (alarmData != null)
+                          {
+                            selectedTime24Hour(context,
+                                    initialTime:
+                                        TimeOfDay.fromDateTime(_alrmCtrl))
+                                .then((TimeOfDay od) => {
+                                      if (od != null)
+                                        {_setAlarmData(alarmData, od)}
+                                    })
+                          }
+                      });
+              // selectedTime24Hour(context);
+            },
+          ),
+          IconButton(
+            icon: new Icon(Icons.color_lens),
+            tooltip: 'Warna',
+            onPressed: () {
+              colorPicker(context, currentColor: _colorCtrl)
+                  .then((newColor) => setState(() {
+                        _colorCtrl = newColor;
+                      }));
+            },
+          ),
+        ],
+      ),
+      body: ZefyrScaffold(
+                  child: ZefyrEditor(
+                    padding: EdgeInsets.all(16),
+                    controller: _contentCtrl,
+                    focusNode: _focusNode,
+                  ),
+                ) 
+      
+    );
+  }
+}

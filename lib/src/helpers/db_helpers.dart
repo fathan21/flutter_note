@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:note_f/src/model/note.dart';
-import 'package:path_provider/path_provider.dart';
+// import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -109,7 +109,7 @@ class DBProvider {
 
   updateNote(Note note) async {
     final db = await database;
-    
+
     final newNote = note.toJson();
 
     var now = new DateTime.now();
@@ -118,7 +118,8 @@ class DBProvider {
     newNote['updated_at'] = formatted;
     print(newNote);
 
-    var res = await db.update('note', newNote, where: 'id = ?', whereArgs: [note.id]);
+    var res =
+        await db.update('note', newNote, where: 'id = ?', whereArgs: [note.id]);
 
     return res;
   }

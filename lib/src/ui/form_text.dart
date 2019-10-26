@@ -17,7 +17,7 @@ class _FormTextState extends State<FormTextPage> {
   TextEditingController _titleCtrl = new TextEditingController();
   TextEditingController _contentCtrl = new TextEditingController();
   NotesBloc _notesBloc;
-  Color _colorCtrl = Colors.blue;
+  Color _colorCtrl = ThemeData().primaryColor;
   DateTime _alrmCtrl = new DateTime.now().add(Duration(hours: 2));
   int setAlarm = 0;
   @override
@@ -25,6 +25,71 @@ class _FormTextState extends State<FormTextPage> {
     super.initState();
     _notesBloc = BlocProvider.of<NotesBloc>(context);
     _getNote(widget.id);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: widget.id == 0 ? Text('Tambah') : Text('Ubah'),
+        backgroundColor: _colorCtrl,
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.save),
+            tooltip: 'Alarm',
+            onPressed: () {
+              this._saveNote();
+            },
+          ),
+          IconButton(
+            icon: new Icon(Icons.delete),
+            tooltip: 'Delete',
+            onPressed: () {
+              this._deleteNote();
+            },
+          ),
+          IconButton(
+            icon: new Icon(Icons.alarm),
+            tooltip: 'Alarm',
+            onPressed: () {
+              selectedDate(context, initialDate: _alrmCtrl)
+                  .then((DateTime alarmData) => {
+                        if (alarmData != null)
+                          {
+                            selectedTime24Hour(context,
+                                    initialTime:
+                                        TimeOfDay.fromDateTime(_alrmCtrl))
+                                .then((TimeOfDay od) => {
+                                      if (od != null)
+                                        {_setAlarmData(alarmData, od)}
+                                    })
+                          }
+                      });
+              // selectedTime24Hour(context);
+            },
+          ),
+          IconButton(
+            icon: new Icon(Icons.color_lens),
+            tooltip: 'Warna',
+            onPressed: () {
+              colorPicker(context, currentColor: _colorCtrl)
+                  .then((newColor) => setState(() {
+                        _colorCtrl = newColor;
+                      }));
+            },
+          ),
+        ],
+      ),
+      body: Container(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            children: <Widget>[
+              Text(setAlarm == 1 ? 'Alaram: ' + _alrmCtrl.toString() : ''),
+              InputCutomeWidget(_titleCtrl, _colorCtrl, null, "Judul"),
+              InputCutomeWidget(_contentCtrl, _colorCtrl, TextInputType.multiline,"Isi"),
+            ],
+          )),
+    );
   }
 
   Future _getNote(id) async {
@@ -72,103 +137,39 @@ class _FormTextState extends State<FormTextPage> {
       setAlarm = 1;
     });
   }
+}
+
+class InputCutomeWidget extends StatelessWidget {
+  final _ctrl;
+  final _colorCtrl;
+  final _inputType;
+  final _placeholder;
+  const InputCutomeWidget(this._ctrl, this._colorCtrl, this._inputType, this._placeholder);
 
   @override
   Widget build(BuildContext context) {
-    InputDecoration _styleInput = InputDecoration(
-      fillColor: _colorCtrl,
-      filled: true,
-      border: InputBorder.none,
-      hintText: 'Text',
-      hintStyle: new TextStyle(color: Colors.grey, fontSize: 20),
-      contentPadding: EdgeInsets.all(16),
-    );
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Tambah Text'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.save),
-            tooltip: 'Alarm',
-            onPressed: () {
-              this._saveNote();
-            },
-          ),
-          IconButton(
-            icon: new Icon(Icons.delete),
-            tooltip: 'Delete',
-            onPressed: () {
-              this._deleteNote();
-            },
-          ),
-          IconButton(
-            icon: new Icon(Icons.alarm, color: (setAlarm == 1? Colors.yellow:Colors.white),),
-            tooltip: 'Alarm',
-            onPressed: () {
-              selectedDate(context, initialDate: _alrmCtrl)
-                  .then((DateTime alarmData) => {
-                        if (alarmData != null)
-                          {
-                            selectedTime24Hour(context,
-                                    initialTime:
-                                        TimeOfDay.fromDateTime(_alrmCtrl))
-                                .then((TimeOfDay od) => {
-                                      if (od != null)
-                                        {_setAlarmData(alarmData, od)}
-                                    })
-                          }
-                      });
-              // selectedTime24Hour(context);
-            },
-          ),
-          IconButton(
-            icon: new Icon(Icons.color_lens, color: _colorCtrl),
-            tooltip: 'Warna',
-            onPressed: () {
-              colorPicker(context, currentColor: _colorCtrl)
-                  .then((newColor) => setState(() {
-                        _colorCtrl = newColor;
-                      }));
-            },
-          ),
-        ],
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        // borderRadius: BorderRadius.all(Radius.circular(32)),
       ),
-      body: Container(
-          padding: EdgeInsets.all(16.0),
-          color: Colors.grey[100],
-          child: Column(
-            children: <Widget>[
-              Text(setAlarm == 1 ? 'Alaram: ' + _alrmCtrl.toString() : ''),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  // borderRadius: BorderRadius.all(Radius.circular(32)),
-                ),
-                margin: EdgeInsets.only(bottom: 20),
-                child: TextField(
-                  style: new TextStyle(color: Colors.black, fontSize: 20),
-                  controller: _titleCtrl,
-                  cursorColor: Colors.black,
-                  decoration: _styleInput,
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  // borderRadius: BorderRadius.all(Radius.circular(32)),
-                ),
-                child: TextField(
-                  controller: _contentCtrl,
-                  style: new TextStyle(color: Colors.black, fontSize: 20),
-                  cursorColor: Colors.black,
-                  maxLines: 20,
-                  keyboardType: TextInputType.multiline,
-                  minLines: 20,
-                  decoration: _styleInput,
-                ),
-              ),
-            ],
-          )),
+      child: TextField(
+        controller: _ctrl,
+        style: new TextStyle(color: Colors.black, fontSize: 20),
+        cursorColor: Colors.black,
+        // maxLines: 20,
+        // minLines: 20,
+        keyboardType: _inputType==null? TextInputType.text: _inputType,
+        decoration: InputDecoration(
+          fillColor: _colorCtrl,
+          filled: true,
+          border: InputBorder.none,
+          hintText: _placeholder == null?'Text':_placeholder,
+          hintStyle: new TextStyle(color: Colors.white, fontSize: 20),
+          contentPadding: EdgeInsets.all(16),
+        ),
+      ),
     );
   }
 }
