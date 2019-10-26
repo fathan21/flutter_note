@@ -4,7 +4,7 @@ import 'package:flutter_material_color_picker/flutter_material_color_picker.dart
 Future<DateTime> selectedDate(BuildContext context,{initialDate }) async => showDatePicker(
       context: context,
       initialDate: initialDate == null ?DateTime.now():initialDate,
-      firstDate: DateTime(2018),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2030),
       builder: (BuildContext context, Widget child) {
         return Theme(

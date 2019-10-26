@@ -167,7 +167,7 @@ class GridNoteListWidget extends StatelessWidget {
     return GridView.count(
       scrollDirection: Axis.vertical,
       controller: ScrollController(),
-      crossAxisCount: 3,
+      crossAxisCount: 2,
       children: List.generate(datas.length, (index) {
         var data = datas[index];
         return GestureDetector(
@@ -188,18 +188,106 @@ class GridNoteItemWidget extends StatelessWidget {
   final data;
   const GridNoteItemWidget(this.data);
 
+  Widget _textWithTitle() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.only(bottom: 5),
+          child: Text(
+            data.title.toString(),
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        Flexible(
+            child: new Text(
+          data.content.toString(),
+          maxLines: 13,
+          overflow: TextOverflow.ellipsis,
+          softWrap: false,
+          style: new TextStyle(
+            fontSize: 13.0,
+            fontFamily: 'Roboto',
+            fontWeight: FontWeight.bold,
+          ),
+        )),
+      ],
+    );
+  }
+
+  Widget _textOnly() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Flexible(
+            child: new Text(
+          data.content.toString(),
+          maxLines: 13,
+          overflow: TextOverflow.ellipsis,
+          softWrap: false,
+          style: new TextStyle(
+            fontSize: 13.0,
+            fontFamily: 'Roboto',
+            fontWeight: FontWeight.bold,
+          ),
+        )),
+      ],
+    );
+  }
+
+  Widget _alarmWidget() {
+    if (data.alarm == null) {
+      return Positioned(
+        top: -5,
+        right: 0,
+        child: Text(" "),
+      );
+    }
+    /*
+    DateTime dob = DateTime.parse('1967-10-12');
+    Duration dur =  DateTime.now().difference(dob);
+    String differenceInYears = (dur.inDays/365).floor().toString();
+    return new Text(differenceInYears + ' years');
+    */
+    DateTime now = DateTime.now();
+    DateTime alrmD = DateTime.parse(data.alarm);
+    int diffH = alrmD.difference(now).inHours;
+    var L = Icon(Icons.alarm, size: 30);
+    if (diffH < 0) {
+      L = Icon(Icons.alarm_off, size: 30);
+    }
+    return Positioned(
+      top: -5,
+      right: 0,
+      child: L,
+    );
+  }
+
+  _renderWidget() {
+    if (data.type == null || data.type == 'text') {
+      if (data.title == '' || data.title == null) {
+        return _textOnly();
+      } else {
+        return _textWithTitle();
+      }
+    }
+    return Text('not found');
+  }
+
   @override
   Widget build(BuildContext context) {
     Color newCl = new Color(data.color.toInt());
     return Container(
-      padding: EdgeInsets.all(0.0),
+      padding: EdgeInsets.all(5),
       decoration: BoxDecoration(border: Border.all(color: newCl), color: newCl),
-      child: Column(
-        children: <Widget>[
-          Text(data.title.toString()),
-          Text(data.color.toString()),
-        ],
+      child: Stack(
+        children: <Widget>[_renderWidget(), _alarmWidget()],
       ),
+
       // color: newCl,//new Color(data.color.toInt()),
       margin: EdgeInsets.all(10.0),
     );
@@ -207,26 +295,27 @@ class GridNoteItemWidget extends StatelessWidget {
 }
 
 class GridNoteEmptyWidget extends StatelessWidget {
-  
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        alignment: Alignment.center,
-        child: GestureDetector(
-          onTap: (){
-            dialogAddNote(context);
-          },
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              new Icon(Icons.book, size:180),
-              new Text('Tambah Catatan', style: TextStyle(fontSize: 30),),
-            ],
-          ),
-        )
-      ),
+          alignment: Alignment.center,
+          child: GestureDetector(
+            onTap: () {
+              dialogAddNote(context);
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                new Icon(Icons.book, size: 180),
+                new Text(
+                  'Tambah Catatan',
+                  style: TextStyle(fontSize: 30),
+                ),
+              ],
+            ),
+          )),
     );
   }
 }

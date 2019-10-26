@@ -9,6 +9,7 @@ class Note {
     int isArchive;
     int color;
     String alarm;
+    String type;
 
     Note({
         this.id,
@@ -19,29 +20,32 @@ class Note {
         this.deletedAt,
         this.isArchive,
         this.alarm,
-        this.color
+        this.color,
+        this.type
     });
 
     // Create a Note from JSON data
     factory Note.fromJson(Map<String, dynamic> json) => new Note(
         id: json["id"],
-        title: json["title"],
+        title: json["title"].toString(),
         content: json["content"],
         createdAt: json["created_at"],
         updatedAt: json["updated_at"],
         deletedAt: json["deleted_at"],
         isArchive: json["is_archive"],
         color: json["color"],
-        alarm: json["alarm"]
+        alarm: json["alarm"],
+        type: json['type']
     );
 
     // Convert our Note to JSON to make it easier when we store it in the database
     Map<String, dynamic> toJson() => {
         "id": id,
-        "title":title,
+        "title":title.toString(),
         "content": content,
         "created_at": createdAt,
         "color": color,
-        "alarm": alarm
+        "alarm": alarm,
+        'type': type
     };
 }

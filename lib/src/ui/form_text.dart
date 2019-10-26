@@ -31,7 +31,7 @@ class _FormTextState extends State<FormTextPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: widget.id == 0 ? Text('Tambah') : Text('Ubah'),
+        title: InputHeaderWidget(_titleCtrl, 'Judul'),
         backgroundColor: _colorCtrl,
         actions: <Widget>[
           IconButton(
@@ -80,15 +80,17 @@ class _FormTextState extends State<FormTextPage> {
           ),
         ],
       ),
-      body: Container(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            children: <Widget>[
-              Text(setAlarm == 1 ? 'Alaram: ' + _alrmCtrl.toString() : ''),
-              InputCutomeWidget(_titleCtrl, _colorCtrl, null, "Judul"),
-              InputCutomeWidget(_contentCtrl, _colorCtrl, TextInputType.multiline,"Isi"),
-            ],
-          )),
+      body: InputFullBodyWidget(_contentCtrl, 'Text'),
+      bottomNavigationBar: BottomAppBar(
+        
+        child: Container(
+          padding: EdgeInsets.all(13.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[Text("tgl buat"), Text("alarm")],
+          ),
+        ),
+      ),
     );
   }
 
@@ -110,8 +112,11 @@ class _FormTextState extends State<FormTextPage> {
 
   Future _saveNote() async {
     Note _note = Note();
-    _note.content = _contentCtrl.text;
-    _note.title = _titleCtrl.text;
+    _note.content = _contentCtrl.text.toString();
+    var title = _titleCtrl.text == '' || _titleCtrl.text == null
+        ? null
+        : _titleCtrl.text;
+    _note.title = title.toString();
     _note.color = _colorCtrl.value;
     _note.alarm = setAlarm == 1 ? _alrmCtrl.toString() : null;
 
@@ -139,17 +144,15 @@ class _FormTextState extends State<FormTextPage> {
   }
 }
 
-class InputCutomeWidget extends StatelessWidget {
+class InputHeaderWidget extends StatelessWidget {
   final _ctrl;
-  final _colorCtrl;
-  final _inputType;
   final _placeholder;
-  const InputCutomeWidget(this._ctrl, this._colorCtrl, this._inputType, this._placeholder);
+  const InputHeaderWidget(this._ctrl, this._placeholder);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.only(left: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         // borderRadius: BorderRadius.all(Radius.circular(32)),
@@ -158,18 +161,48 @@ class InputCutomeWidget extends StatelessWidget {
         controller: _ctrl,
         style: new TextStyle(color: Colors.black, fontSize: 20),
         cursorColor: Colors.black,
-        // maxLines: 20,
-        // minLines: 20,
-        keyboardType: _inputType==null? TextInputType.text: _inputType,
+        keyboardType: TextInputType.text,
         decoration: InputDecoration(
-          fillColor: _colorCtrl,
-          filled: true,
-          border: InputBorder.none,
-          hintText: _placeholder == null?'Text':_placeholder,
-          hintStyle: new TextStyle(color: Colors.white, fontSize: 20),
-          contentPadding: EdgeInsets.all(16),
-        ),
+            border: InputBorder.none,
+            // contentPadding: EdgeInsets.only(left: 16, right: 16),
+            hintText: _placeholder == null ? 'Text' : _placeholder,
+            hintStyle: TextStyle(color: Colors.grey[300])),
       ),
     );
+  }
+}
+
+class InputFullBodyWidget extends StatelessWidget {
+  final _ctrl;
+  final _placeholder;
+  const InputFullBodyWidget(this._ctrl, this._placeholder);
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, size) {
+      TextSpan text = new TextSpan(
+        text: _ctrl.text,
+      );
+
+      TextPainter tp = new TextPainter(
+        text: text,
+        textDirection: TextDirection.ltr,
+        textAlign: TextAlign.left,
+      );
+      tp.layout(maxWidth: size.maxWidth);
+      int lines = (tp.size.height / tp.preferredLineHeight).ceil();
+      int maxLines = 6;
+      return TextField(
+        controller: _ctrl,
+        maxLines: lines > maxLines ? null : maxLines,
+        textInputAction: TextInputAction.newline,
+        decoration: InputDecoration(
+            hintText: _placeholder,
+            contentPadding: EdgeInsets.all(16),
+            // border: new OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
+            // labelText: 'Life story',
+            border: InputBorder.none),
+      );
+    });
   }
 }
