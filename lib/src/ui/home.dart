@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:note_f/src/bloc/bloc_provider.dart';
 import 'package:note_f/src/bloc/note_bloc.dart';
 import 'package:note_f/src/model/note.dart';
+import 'package:note_f/src/ui/form_list.dart';
 import 'package:note_f/src/ui/form_text.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -113,7 +114,10 @@ Future dialogAddNote(BuildContext c) => showDialog(
                 ), //`Text` to display
                 onPressed: () {
                   Navigator.pop(c, true);
-                  Navigator.popAndPushNamed(c, '/form_list');
+                  Navigator.push(
+                    c,
+                    MaterialPageRoute(builder: (c) => new FormListPage(id: 0)),
+                  );
                 },
               ),
             ],

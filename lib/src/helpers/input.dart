@@ -72,17 +72,26 @@ class InputContainer extends StatelessWidget {
   final fontSize;
   final hightFromScreen;
   final type;
+
+  final listItem;
+  final listItemAdd;
+  final listItemRemove;
+  final listItemChange;
   const InputContainer({
     this.ctrl,
     this.maxline = 1,
     this.placeholder = " Text",
     this.color = Colors.amber,
     this.fontSize = 16.0,
-    this.hightFromScreen = null,
+    this.hightFromScreen,
     this.type = 'text',
+    this.listItem,
+    this.listItemAdd,
+    this.listItemChange,
+    this.listItemRemove,
   });
 
-  Widget _typeText() {
+  Widget _typeText(context) {
     return TextField(
       controller: ctrl,
       style: TextStyle(fontSize: fontSize),
@@ -96,9 +105,93 @@ class InputContainer extends StatelessWidget {
     );
   }
 
-  _getchildWidget() {
+  Widget _typeList(context) {
+    return Container(
+      padding: EdgeInsets.only(top: 16.0),
+      child: Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Container(
+                alignment: Alignment.center,
+                width: 50.0,
+              ),
+              Container(
+                alignment: Alignment.center,
+                width: 50.0,
+                child: IconButton(
+                  icon: Icon(Icons.add),
+                  tooltip: 'Tambah',
+                  onPressed: listItemAdd,
+                ),
+              ),
+              Container(
+                alignment: Alignment.centerLeft,
+                child: GestureDetector(
+                  child: Text("Tambah"),
+                  onTap: listItemAdd,
+                ),
+              ),
+            ],
+          ),
+          ListView.builder(
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            itemCount: listItem.length,
+            itemBuilder: (BuildContext context, int i) =>_typeListItem(context, listItem[i], i),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _typeListItem(context, data, i) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          alignment: Alignment.center,
+          width: 50.0,
+          child: IconButton(
+            icon: Icon(Icons.menu),
+            tooltip: 'Pindah',
+            onPressed: () {},
+          ),
+        ),
+        Container(
+          alignment: Alignment.center,
+          width: 50.0,
+          child: Checkbox(
+            value: false,
+            onChanged: (bool val) {},
+          ),
+        ),
+        Expanded(
+            flex: 2,
+            child: TextField(
+              maxLines: null,
+            )),
+        Container(
+          alignment: Alignment.center,
+          width: 50.0,
+          child: IconButton(
+            icon: Icon(Icons.delete),
+            tooltip: 'Pindah',
+            onPressed: () {
+              listItemRemove(i);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  _getchildWidget(context) {
     if (type == 'text') {
-      return _typeText();
+      return _typeText(context);
+    }
+    if (type == 'list') {
+      return _typeList(context);
     }
   }
 
@@ -127,7 +220,7 @@ class InputContainer extends StatelessWidget {
             : MediaQuery.of(context).size.height / hightFromScreen, // / 1.5,
         width: MediaQuery.of(context).size.width,
         padding: EdgeInsets.only(left: 5.0),
-        child: _getchildWidget());
+        child: _getchildWidget(context));
   }
 }
 
@@ -178,4 +271,3 @@ class InputHead extends StatelessWidget {
     );
   }
 }
-
