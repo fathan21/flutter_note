@@ -82,11 +82,10 @@ class DBProvider {
     final newNote = note.toJson();
 
     var now = new DateTime.now();
-    var formatter = new DateFormat('yyyy-MM-dd H:m:s');
+    var formatter = new DateFormat('yyyy-MM-dd HH:mm:ss');
     String formatted = formatter.format(now);
     newNote['created_at'] = formatted;
     newNote['type'] = 'text';
-    print(newNote);
     var res = await db.insert('note', newNote);
 
     return res;
@@ -114,9 +113,10 @@ class DBProvider {
     final newNote = note.toJson();
 
     var now = new DateTime.now();
-    var formatter = new DateFormat('yyyy-MM-dd H:m:s');
+    var formatter = new DateFormat('yyyy-MM-dd HH:mm:ss');
     String formatted = formatter.format(now);
     newNote['updated_at'] = formatted;
+    newNote['type'] = 'text';
     print(newNote);
 
     var res =

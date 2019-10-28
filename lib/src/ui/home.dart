@@ -167,7 +167,7 @@ class GridNoteListWidget extends StatelessWidget {
     return GridView.count(
       scrollDirection: Axis.vertical,
       controller: ScrollController(),
-      crossAxisCount: 3,
+      crossAxisCount: 2,
       children: List.generate(datas.length, (index) {
         var data = datas[index];
         return GestureDetector(
@@ -193,28 +193,29 @@ class GridNoteItemWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Container(
-          margin: EdgeInsets.only(bottom: 5),
+          margin: EdgeInsets.only(bottom: 10, right: 15),
           child: Text(
             data.title.toString(),
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 25,
               fontWeight: FontWeight.bold,
             ),
             overflow: TextOverflow.ellipsis,
           ),
         ),
         Flexible(
-            child: new Text(
-          data.content.toString(),
-          maxLines: 13,
-          overflow: TextOverflow.ellipsis,
-          softWrap: false,
-          style: new TextStyle(
-            fontSize: 13.0,
-            fontFamily: 'Roboto',
-            fontWeight: FontWeight.bold,
-          ),
-        )),
+          child: new Text(
+            data.content.toString(),
+            maxLines: 13,
+            overflow: TextOverflow.ellipsis,
+            softWrap: false,
+            style: new TextStyle(
+              fontSize: 14.0,
+              fontFamily: 'Roboto',
+              fontWeight: FontWeight.bold,
+            ),
+          )
+        ),
       ],
     );
   }
