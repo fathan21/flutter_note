@@ -1,4 +1,6 @@
 
+import 'package:note_f/src/model/note_check.dart';
+
 class Note {
     int id;
     String title;
@@ -48,4 +50,10 @@ class Note {
         "alarm": alarm,
         'type': type
     };
+}
+
+
+class NoteComp {
+  List<NoteCheck> noteCheck;
+  Note note;
 }

@@ -70,21 +70,31 @@ class _FormListState extends State<FormListPage> {
 
     if (widget.id != 0) {
       _note.id = widget.id;
-      _notesBloc.inSaveNote.add(_note);
+      // _notesBloc.inSaveNote.add(_note);
     } else {
-      _notesBloc.inAddNote.add(_note);
+      // _notesBloc.inAddNote.add(_note);
     }
     Navigator.pop(context);
   }
   Future _nodeDetailAdd() async {
-    print('add');
     _noteDetail.add(new NoteCheck());
     setState(() {
      _noteDetail = _noteDetail; 
     });
   }
+  
+  Future _noteDetailChange(type,i,val) async {
+    if(type == 'content'){
+      _noteDetail[i].content = val;
+    }
+    if(type == 'isChecked'){
+      _noteDetail[i].isChecked = val == true?1:0;
+    }
+    setState(() {
+     _noteDetail = _noteDetail; 
+    });
+  }
   Future _nodeDetailRemove(i) async {
-    print("remove $i " );
     _noteDetail.removeAt(i);
     setState(() {
      _noteDetail = _noteDetail; 
@@ -209,6 +219,7 @@ class _FormListState extends State<FormListPage> {
                   color: _colorCtrl,
                   maxline: null,
                   listItem: _noteDetail,
+                  listItemChange: _noteDetailChange,
                   listItemAdd: _nodeDetailAdd,
                   listItemRemove: _nodeDetailRemove,
                   hightFromScreen: 1.5),

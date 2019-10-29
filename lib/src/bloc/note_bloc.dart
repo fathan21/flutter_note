@@ -26,6 +26,8 @@ class NotesBloc implements BlocBase {
   StreamSink<int> get inDeleteNote => _deleteNoteController.sink;
 
   
+  final _addNoteCompController = StreamController<NoteComp>.broadcast();
+  StreamSink<NoteComp> get inAddNoteComp => _addNoteCompController.sink;
   
   get inGetNote => (id) async{
     var d = await DBProvider.db.getNote(id);
@@ -44,6 +46,8 @@ class NotesBloc implements BlocBase {
     _saveNoteController.stream.listen(_handleSaveNote);
     _deleteNoteController.stream.listen(_handleDeleteNote);
 
+    _addNoteCompController.stream.listen(_handleAddNoteComp);
+
   }
 
   // All stream controllers you create should be closed within this function
@@ -55,7 +59,7 @@ class NotesBloc implements BlocBase {
     _saveNoteController.close();
     _deleteNoteController.close();
 
-
+    _addNoteCompController.close();
   }
 
   void getNotes() async {
@@ -79,6 +83,14 @@ class NotesBloc implements BlocBase {
 
   void _handleDeleteNote(int id) async {
     await DBProvider.db.deleteNote(id);
+    return getNotes();
+  }
+
+  
+  void _handleAddNoteComp(NoteComp note) async {
+    // Create the note in the database
+    await DBProvider.db.addNoteComp(note);
+    
     return getNotes();
   }
 }

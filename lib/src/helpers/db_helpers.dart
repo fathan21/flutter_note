@@ -73,9 +73,7 @@ class DBProvider {
     return db;
   }
 
-  /*
-	 * Note Table
-	 */
+
   addNote(Note note) async {
     final db = await database;
 
@@ -90,6 +88,23 @@ class DBProvider {
 
     return res;
   }
+  
+  addNoteComp(NoteComp noteComp) async {
+    final db = await database;
+    final newNote = noteComp.note.toJson();
+    var now = new DateTime.now();
+    var formatter = new DateFormat('yyyy-MM-dd HH:mm:ss');
+    String formatted = formatter.format(now);
+    newNote['created_at'] = formatted;
+    newNote['type'] = 'text';
+    var res = await db.insert('note', newNote);
+
+    return res;
+  }
+  
+  /*
+	 * Note Table
+	 */
 
   getNotes() async {
     final db = await database;

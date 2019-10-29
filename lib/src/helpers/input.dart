@@ -162,14 +162,25 @@ class InputContainer extends StatelessWidget {
           alignment: Alignment.center,
           width: 50.0,
           child: Checkbox(
-            value: false,
-            onChanged: (bool val) {},
+            value: listItem[i].isChecked == 1?true:false,
+            onChanged: (bool val) {
+                listItemChange('isChecked',i,val);
+            },
           ),
         ),
         Expanded(
             flex: 2,
             child: TextField(
               maxLines: null,
+              onChanged: (val){
+                listItemChange('content',i,val);
+              },
+              decoration: InputDecoration(
+                
+              ),
+              style: TextStyle(
+                      decoration: listItem[i].isChecked == 1?TextDecoration.lineThrough:TextDecoration.none
+                    ),
             )),
         Container(
           alignment: Alignment.center,
