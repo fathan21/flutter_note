@@ -3,7 +3,7 @@ import 'package:note_f/src/model/note_check.dart';
 
 class Note {
     int id;
-    String title;
+    String title = '';
     String content;
     String createdAt;
     String updatedAt;
@@ -56,4 +56,16 @@ class Note {
 class NoteComp {
   List<NoteCheck> noteCheck;
   Note note;
+  
+    NoteComp({
+        this.noteCheck,
+        this.note,
+    });
+  
+    // Create a Note from JSON data
+    factory NoteComp.fromJson(note, noteCheck) => new NoteComp(
+        note: note,
+        noteCheck: noteCheck,
+    );
+
 }

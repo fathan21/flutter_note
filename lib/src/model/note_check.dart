@@ -1,8 +1,8 @@
 
 class NoteCheck {
     int id;
-    String content;
-    int isChecked;
+    String content = '';
+    int isChecked = 0;
     int noteId;
     int order;
     String createdAt;
@@ -37,8 +37,8 @@ class NoteCheck {
         "id": id,
         "content": content,
         "created_at": createdAt,
-        "is_chceked": isChecked,
-        "no_id": noteId,
+        "is_checked": isChecked,
+        "note_id": noteId,
         'order': order
     };
 }

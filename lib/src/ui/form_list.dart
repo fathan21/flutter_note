@@ -27,7 +27,7 @@ class _FormListState extends State<FormListPage> {
   String _datePost = " ";
 
   Note _note = new Note();
-  List<NoteCheck> _noteDetail = [new NoteCheck(), new NoteCheck(), new NoteCheck()];
+  List<NoteCheck> _noteDetail = [new NoteCheck()];
   @override
   void initState() {
     super.initState();
@@ -42,12 +42,17 @@ class _FormListState extends State<FormListPage> {
             dateformat.DateFormat("kk:mm, dd MMM yy  ").format(DateTime.now());
       });
     } else {
-      _note = await _notesBloc.inGetNote(id);
+      NoteComp noteComp = await _notesBloc.inGetNoteCom(id);
+      _note = noteComp.note;
       _titleCtrl.text = _note.title;
       _contentCtrl.text = _note.content;
-      var formattedString =
-          _note.updatedAt != null ? _note.updatedAt : _note.createdAt;
+      var formattedString = _note.updatedAt != null ? _note.updatedAt : _note.createdAt;
+
+      if(_note.type == 'check'){
+        noteComp.noteCheck.add(new NoteCheck());
+      }
       setState(() {
+        _noteDetail = noteComp.noteCheck;
         _datePost = dateformat.DateFormat("kk:mm, dd MMM yy ")
             .format(DateTime.parse(formattedString));
         _colorCtrl = new Color(_note.color.toInt());
@@ -68,11 +73,15 @@ class _FormListState extends State<FormListPage> {
     _note.color = _colorCtrl.value;
     _note.alarm = setAlarm == 1 ? _alrmCtrl.toString() : null;
 
+    var noteComp = new NoteComp();
+        noteComp.note = _note;
+        noteComp.noteCheck = _noteDetail;
     if (widget.id != 0) {
       _note.id = widget.id;
-      // _notesBloc.inSaveNote.add(_note);
+      
+      _notesBloc.inSaveNoteComp.add(noteComp);
     } else {
-      // _notesBloc.inAddNote.add(_note);
+      _notesBloc.inAddNoteComp.add(noteComp);
     }
     Navigator.pop(context);
   }

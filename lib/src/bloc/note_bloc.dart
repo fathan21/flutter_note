@@ -7,13 +7,16 @@ import 'package:note_f/src/model/note.dart';
 class NotesBloc implements BlocBase {
   // Create a broadcast controller that allows this stream to be listened
   // to multiple times. This is the primary, if not only, type of stream you'll be using.
-  final _notesController = StreamController<List<Note>>.broadcast();
+  // final _notesController = StreamController<List<Note>>.broadcast();
+  final _notesController = StreamController<List<NoteComp>>.broadcast();
 
   // Input stream. We add our notes to the stream using this variable.
-  StreamSink<List<Note>> get _inNotes => _notesController.sink;
+  // StreamSink<List<Note>> get _inNotes => _notesController.sink;
+  StreamSink<List<NoteComp>> get _inNotes => _notesController.sink;
 
   // Output stream. This one will be used within our pages to display the notes.
-  Stream<List<Note>> get notes => _notesController.stream;
+  // Stream<List<Note>> get notes => _notesController.stream;
+  Stream<List<NoteComp>> get notes => _notesController.stream;
 
   // Input stream for adding new notes. We'll call this from our pages.
   final _addNoteController = StreamController<Note>.broadcast();
@@ -29,9 +32,18 @@ class NotesBloc implements BlocBase {
   final _addNoteCompController = StreamController<NoteComp>.broadcast();
   StreamSink<NoteComp> get inAddNoteComp => _addNoteCompController.sink;
   
+  final _saveNoteComController = StreamController<NoteComp>.broadcast();
+  StreamSink<NoteComp> get inSaveNoteComp => _saveNoteComController.sink;
+
   get inGetNote => (id) async{
     var d = await DBProvider.db.getNote(id);
     return d;
+  };
+  
+  get inGetNoteCom => (id) async{
+    var note = await DBProvider.db.getNoteComp(id);
+
+    return note;
   };
   
 
@@ -47,6 +59,7 @@ class NotesBloc implements BlocBase {
     _deleteNoteController.stream.listen(_handleDeleteNote);
 
     _addNoteCompController.stream.listen(_handleAddNoteComp);
+    _saveNoteComController.stream.listen(_handleSaveNoteComp);
 
   }
 
@@ -60,11 +73,12 @@ class NotesBloc implements BlocBase {
     _deleteNoteController.close();
 
     _addNoteCompController.close();
+    _saveNoteComController.close();
   }
 
   void getNotes() async {
     // Retrieve all the notes from the database
-    List<Note> notes = await DBProvider.db.getNotes();
+    List<NoteComp> notes = await DBProvider.db.getNotes();
     // Add all of the notes to the stream so we can grab them later from our pages
     _inNotes.add(notes);
   }
@@ -91,6 +105,11 @@ class NotesBloc implements BlocBase {
     // Create the note in the database
     await DBProvider.db.addNoteComp(note);
     
+    return getNotes();
+  }
+  
+  _handleSaveNoteComp(NoteComp note) async {
+    await DBProvider.db.updateNoteComp(note);
     return getNotes();
   }
 }

@@ -134,11 +134,13 @@ class InputContainer extends StatelessWidget {
               ),
             ],
           ),
-          ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: listItem.length,
-            itemBuilder: (BuildContext context, int i) =>_typeListItem(context, listItem[i], i),
+          Expanded(
+            child: ListView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: listItem.length,
+              itemBuilder: (BuildContext context, int i) =>_typeListItem(context, listItem[i], i),
+            ),
           )
         ],
       ),
@@ -146,6 +148,9 @@ class InputContainer extends StatelessWidget {
   }
 
   Widget _typeListItem(context, data, i) {
+    TextEditingController controller = TextEditingController(
+      text: data.content != null?data.content:''
+    );
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -171,6 +176,7 @@ class InputContainer extends StatelessWidget {
         Expanded(
             flex: 2,
             child: TextField(
+              controller: controller,
               maxLines: null,
               onChanged: (val){
                 listItemChange('content',i,val);

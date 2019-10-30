@@ -49,11 +49,12 @@ class _MyHomePageState extends State<MyHomePage> {
               // The streambuilder allows us to make use of our streams and display
               // that data on our page. It automatically updates when the stream updates.
               // Whenever you want to display stream data, you'll use the StreamBuilder.
-              child: StreamBuilder<List<Note>>(
+              child: StreamBuilder<List<NoteComp>>(
                 stream: _notesBloc.notes,
-                builder:
-                    (BuildContext context, AsyncSnapshot<List<Note>> snapshot) {
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<NoteComp>> snapshot) {
                   // Make sure data exists and is actually loaded
+                  // print(snapshot.hasError);
                   if (snapshot.hasData) {
                     // If there are no notes (data), display this message.
 
@@ -61,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       return GridNoteEmptyWidget();
                     }
 
-                    List<Note> notes = snapshot.data;
+                    List<NoteComp> notes = snapshot.data;
                     return GridNoteListWidget(notes);
                   }
                   return Center(
@@ -179,10 +180,14 @@ class GridNoteListWidget extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => new FormTextPage(id: data.id)),
+                    builder: (context) =>   
+                        data.noteCheck.length > 0 ?
+                        new FormListPage(id: data.note.id):
+                        new FormTextPage(id: data.note.id)
+                    ),
               );
             },
-            child: GridNoteItemWidget(data));
+            child: GridNoteItemWidget(data.note, data.noteCheck));
       }),
     );
   }
@@ -190,56 +195,97 @@ class GridNoteListWidget extends StatelessWidget {
 
 class GridNoteItemWidget extends StatelessWidget {
   final data;
-  const GridNoteItemWidget(this.data);
+  final noteCheck;
+  const GridNoteItemWidget(this.data, this.noteCheck);
 
-  Widget _textWithTitle() {
+  Widget _text() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Container(
-          margin: EdgeInsets.only(bottom: 10, right: 15),
-          child: Text(
-            data.title.toString(),
-            style: TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
-            ),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
+        (data.title == '' || data.title == null
+            ? null
+            : Container(
+                margin: EdgeInsets.only(bottom: 10, right: 15),
+                child: Text(
+                  data.title.toString(),
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              )),
         Flexible(
-          child: new Text(
-            data.content.toString(),
-            maxLines: 13,
-            overflow: TextOverflow.ellipsis,
-            softWrap: false,
-            style: new TextStyle(
-              fontSize: 14.0,
-              fontFamily: 'Roboto',
-              fontWeight: FontWeight.bold,
-            ),
-          )
-        ),
-      ],
-    );
-  }
-
-  Widget _textOnly() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Flexible(
-          child: new Text(
+            child: new Text(
           data.content.toString(),
           maxLines: 13,
           overflow: TextOverflow.ellipsis,
           softWrap: false,
           style: new TextStyle(
-            fontSize: 13.0,
+            fontSize: 14.0,
             fontFamily: 'Roboto',
             fontWeight: FontWeight.bold,
           ),
         )),
+      ],
+    );
+  }
+
+  Widget _chceked() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        (data.title == '' || data.title == null
+              ? null
+              : Container(
+                  margin: EdgeInsets.only(bottom: 10, right: 15),
+                  child: Text(
+                    data.title.toString(),
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                )
+        ),
+        Expanded(
+          child: ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(8),
+            itemCount: noteCheck.length,
+            itemBuilder: (BuildContext context, int index) {
+              return _typeListItem(context, noteCheck[index], index);
+            }
+          ),
+        )
+      ],
+      
+    );
+  }
+
+  
+  Widget _typeListItem(context, data, i) {
+    return Row(
+      // crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          alignment: Alignment.topCenter,
+          child: Checkbox(
+            value: noteCheck[i].isChecked == 1 ? true : false,
+            onChanged: null,
+          ),
+        ),
+        Expanded(
+          flex: 2,
+          child: Text(
+              noteCheck[i].content != null ? noteCheck[i].content :'',
+              style: TextStyle(
+                decorationStyle: TextDecorationStyle.double,
+                decoration:noteCheck[i].isChecked == 1? TextDecoration.lineThrough: TextDecoration.none
+              ),
+          ),
+        ),
       ],
     );
   }
@@ -274,13 +320,10 @@ class GridNoteItemWidget extends StatelessWidget {
 
   _renderWidget() {
     if (data.type == null || data.type == 'text') {
-      if (data.title == '' || data.title == null) {
-        return _textOnly();
-      } else {
-        return _textWithTitle();
-      }
+      return _text();
+    }else {
+      return _chceked();
     }
-    return Text('not found');
   }
 
   @override
@@ -289,12 +332,9 @@ class GridNoteItemWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(5),
       decoration: BoxDecoration(
-          border: Border.all(color: newCl), 
+          border: Border.all(color: newCl),
           color: newCl,
-          borderRadius: BorderRadius.all(
-            Radius.circular(16.0)
-          )
-      ),
+          borderRadius: BorderRadius.all(Radius.circular(16.0))),
       child: Stack(
         children: <Widget>[_renderWidget(), _alarmWidget()],
       ),
