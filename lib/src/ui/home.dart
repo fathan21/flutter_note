@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:note_f/src/bloc/bloc_provider.dart';
 import 'package:note_f/src/bloc/note_bloc.dart';
+import 'package:note_f/src/helpers/dialog.dart';
 import 'package:note_f/src/model/note.dart';
-import 'package:note_f/src/ui/form_list.dart';
-import 'package:note_f/src/ui/form_text.dart';
+import 'package:note_f/src/ui/custome_widget.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -15,17 +15,25 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   NotesBloc _notesBloc;
-
+  String _activemenu = 'Catatan';
   @override
   void initState() {
     super.initState();
     _notesBloc = BlocProvider.of<NotesBloc>(context);
   }
 
+  void _setActiveMenu(e) {
+    setState(() {
+      _activemenu = e;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(child: ListDrawer()),
+      drawer: Drawer(
+          child: ListDrawer(
+              activeMenu: _activemenu, setActiveMenu: _setActiveMenu)),
       appBar: AppBar(
         title: Text(widget.title),
         actions: <Widget>[
@@ -41,7 +49,17 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ],
       ),
-      body: Container(
+      body: WidgetCatatan()
+    );
+  }
+}
+
+class WidgetCatatan extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    
+    NotesBloc _notesBloc = BlocProvider.of<NotesBloc>(context);
+    return Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -73,300 +91,103 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 }
 
-Future dialogAddNote(BuildContext c) => showDialog(
-      context: c,
-      builder: (BuildContext c) {
-        // return object of type Dialog
-        const styleBtn = TextStyle(fontSize: 20);
-        return AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            // verticalDirection: VerticalDirection.down,
-            children: <Widget>[
-              FlatButton(
-                onPressed: () {},
-                child: const Text('Tambah Catatan', style: styleBtn),
-              ),
-              FlatButton.icon(
-                icon: Icon(Icons.list), //`Icon` to display
-                label: Text(
-                  'Text',
-                  style: styleBtn,
-                ), //`Text` to display
-                onPressed: () {
-                  Navigator.pop(c, true);
-                  Navigator.push(
-                    c,
-                    MaterialPageRoute(builder: (c) => new FormTextPage(id: 0)),
-                  );
-                },
-              ),
-              FlatButton.icon(
-                icon: Icon(Icons.check_box), //`Icon` to display
-                label: Text(
-                  'Daftar Centang',
-                  style: styleBtn,
-                ), //`Text` to display
-                onPressed: () {
-                  Navigator.pop(c, true);
-                  Navigator.push(
-                    c,
-                    MaterialPageRoute(builder: (c) => new FormListPage(id: 0)),
-                  );
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-
 class ListDrawer extends StatelessWidget {
+  final activeMenu;
+  final setActiveMenu;
+  const ListDrawer({this.activeMenu, this.setActiveMenu});
+
+  Widget _options(context, {menu, borderBottom}) {
+    TextStyle menuTextStyle =
+        new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w400);
+    BoxDecoration menuStyle = BoxDecoration();
+    BoxDecoration activeMenuStyle = BoxDecoration(
+        color: Colors.brown[200],
+        borderRadius: BorderRadius.only(
+            topRight: Radius.circular(30.0),
+            bottomRight: Radius.circular(30.0)));
+    List<Widget> list = new List();
+    for (var item in menu) {
+      list.add(Container(
+        margin: EdgeInsets.only(right: 10.0, bottom: 5.0),
+        decoration: activeMenu.toString().toLowerCase() ==
+                item["label"].toString().toLowerCase()
+            ? activeMenuStyle
+            : menuStyle,
+        child: ListTile(
+          leading: Icon(item["icon"]),
+          title: Text(
+            item["label"],
+            style: menuTextStyle,
+          ),
+          // trailing: Icon(Icons.arrow_forward),
+          onTap: () {
+            setActiveMenu(item["label"].toString().toString());
+            Navigator.pop(context);
+            //
+          },
+        ),
+      ));
+    }
+
+    return Container(
+      padding: EdgeInsets.only(bottom: 20.0, top: 10.0),
+      decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(
+        color: borderBottom == 1 ? Colors.grey : Colors.transparent,
+        width: 1.0,
+      ))),
+      child: Column(
+        children: list,
+      ),
+    );
+  }
+
+  List<Widget> ListMyWidgets(context) {
+    List<Widget> list = new List();
+    list.add(Container(
+      height: 90.0,
+      padding: EdgeInsets.only(top: 30, left: 16.0),
+      margin: EdgeInsets.all(0.0),
+      color: ThemeData().primaryColor,
+      child: Text(
+        "Notepad",
+        style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
+      ),
+    ));
+    // activeMenu, menu,borderBottom
+    var menu = [
+      {"label": "Catatan", "icon": Icons.book},
+      {"label": "Pengingat", "icon": Icons.notifications},
+    ];
+
+    var menu1 = [
+      {"label": "Arsip", "icon": Icons.archive},
+      {"label": "Sampah", "icon": Icons.delete},
+    ];
+
+    var menu2 = [
+      {"label": "Setelan", "icon": Icons.settings},
+      {"label": "Bantuan & Masukan", "icon": Icons.help_outline},
+    ];
+    list.add(_options(
+      context,
+      borderBottom: 1,
+      menu: menu,
+    ));
+    list.add(_options(context, borderBottom: 1, menu: menu1));
+    list.add(_options(context, borderBottom: 0, menu: menu2));
+    return list;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView(
-      // Important: Remove any padding from the ListView.
-      padding: EdgeInsets.zero,
-      children: <Widget>[
-        DrawerHeader(
-          child: Text('Drawer Header'),
-          decoration: BoxDecoration(
-            color: Colors.amber,
-          ),
-        ),
-        ListTile(
-          title: Text('Item 1'),
-          onTap: () {
-            // Update the state of the app
-            // ...
-            // Then close the drawer
-            Navigator.pop(context);
-          },
-        ),
-        ListTile(
-          title: Text('Item 2'),
-          onTap: () {
-            // Update the state of the app
-            // ...
-            // Then close the drawer
-            Navigator.pop(context);
-          },
-        ),
-      ],
-    );
-  }
-}
-
-class GridNoteListWidget extends StatelessWidget {
-  final List datas;
-  const GridNoteListWidget(this.datas);
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.count(
-      scrollDirection: Axis.vertical,
-      controller: ScrollController(),
-      crossAxisCount: 2,
-      children: List.generate(datas.length, (index) {
-        var data = datas[index];
-        return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>   
-                        data.noteCheck.length > 0 ?
-                        new FormListPage(id: data.note.id):
-                        new FormTextPage(id: data.note.id)
-                    ),
-              );
-            },
-            child: GridNoteItemWidget(data.note, data.noteCheck));
-      }),
-    );
-  }
-}
-
-class GridNoteItemWidget extends StatelessWidget {
-  final data;
-  final noteCheck;
-  const GridNoteItemWidget(this.data, this.noteCheck);
-
-  Widget _text() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        (data.title == '' || data.title == null
-            ? null
-            : Container(
-                margin: EdgeInsets.only(bottom: 10, right: 15),
-                child: Text(
-                  data.title.toString(),
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              )),
-        Flexible(
-            child: new Text(
-          data.content.toString(),
-          maxLines: 13,
-          overflow: TextOverflow.ellipsis,
-          softWrap: false,
-          style: new TextStyle(
-            fontSize: 14.0,
-            fontFamily: 'Roboto',
-            fontWeight: FontWeight.bold,
-          ),
-        )),
-      ],
-    );
-  }
-
-  Widget _chceked() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        (data.title == '' || data.title == null
-              ? null
-              : Container(
-                  margin: EdgeInsets.only(bottom: 10, right: 15),
-                  child: Text(
-                    data.title.toString(),
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                )
-        ),
-        Expanded(
-          child: ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(8),
-            itemCount: noteCheck.length,
-            itemBuilder: (BuildContext context, int index) {
-              return _typeListItem(context, noteCheck[index], index);
-            }
-          ),
-        )
-      ],
-      
-    );
-  }
-
-  
-  Widget _typeListItem(context, data, i) {
-    return Row(
-      // crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Container(
-          alignment: Alignment.topCenter,
-          child: Checkbox(
-            value: noteCheck[i].isChecked == 1 ? true : false,
-            onChanged: null,
-          ),
-        ),
-        Expanded(
-          flex: 2,
-          child: Text(
-              noteCheck[i].content != null ? noteCheck[i].content :'',
-              style: TextStyle(
-                decorationStyle: TextDecorationStyle.double,
-                decoration:noteCheck[i].isChecked == 1? TextDecoration.lineThrough: TextDecoration.none
-              ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _alarmWidget() {
-    if (data.alarm == null) {
-      return Positioned(
-        top: -5,
-        right: 0,
-        child: Text(" "),
-      );
-    }
-    /*
-    DateTime dob = DateTime.parse('1967-10-12');
-    Duration dur =  DateTime.now().difference(dob);
-    String differenceInYears = (dur.inDays/365).floor().toString();
-    return new Text(differenceInYears + ' years');
-    */
-    DateTime now = DateTime.now();
-    DateTime alrmD = DateTime.parse(data.alarm);
-    int diffH = alrmD.difference(now).inHours;
-    var L = Icon(Icons.alarm, size: 30);
-    if (diffH < 0) {
-      L = Icon(Icons.alarm_off, size: 30);
-    }
-    return Positioned(
-      top: -5,
-      right: 0,
-      child: L,
-    );
-  }
-
-  _renderWidget() {
-    if (data.type == null || data.type == 'text') {
-      return _text();
-    }else {
-      return _chceked();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    Color newCl = new Color(data.color.toInt());
-    return Container(
-      padding: EdgeInsets.all(5),
-      decoration: BoxDecoration(
-          border: Border.all(color: newCl),
-          color: newCl,
-          borderRadius: BorderRadius.all(Radius.circular(16.0))),
-      child: Stack(
-        children: <Widget>[_renderWidget(), _alarmWidget()],
-      ),
-
-      // color: newCl,//new Color(data.color.toInt()),
-      margin: EdgeInsets.all(10.0),
-    );
-  }
-}
-
-class GridNoteEmptyWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-          alignment: Alignment.center,
-          child: GestureDetector(
-            onTap: () {
-              dialogAddNote(context);
-            },
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                new Icon(Icons.book, size: 180),
-                new Text(
-                  'Tambah Catatan',
-                  style: TextStyle(fontSize: 30),
-                ),
-              ],
-            ),
-          )),
+      children: ListMyWidgets(context),
     );
   }
 }

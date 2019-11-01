@@ -2,6 +2,8 @@ import 'dart:async' show Future;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:note_f/src/ui/form_list.dart';
+import 'package:note_f/src/ui/form_text.dart';
 
 Future<T> _showAlert<T>({BuildContext context, Widget child}) => showDialog<T>(
       context: context,
@@ -108,3 +110,53 @@ class LoadingDialog extends CupertinoAlertDialog {
 }
 
 */
+
+
+Future dialogAddNote(BuildContext c) => showDialog(
+      context: c,
+      builder: (BuildContext c) {
+        // return object of type Dialog
+        const styleBtn = TextStyle(fontSize: 20);
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            // verticalDirection: VerticalDirection.down,
+            children: <Widget>[
+              FlatButton(
+                onPressed: () {},
+                child: const Text('Tambah Catatan', style: styleBtn),
+              ),
+              FlatButton.icon(
+                icon: Icon(Icons.list), //`Icon` to display
+                label: Text(
+                  'Text',
+                  style: styleBtn,
+                ), //`Text` to display
+                onPressed: () {
+                  Navigator.pop(c, true);
+                  Navigator.push(
+                    c,
+                    MaterialPageRoute(builder: (c) => new FormTextPage(id: 0)),
+                  );
+                },
+              ),
+              FlatButton.icon(
+                icon: Icon(Icons.check_box), //`Icon` to display
+                label: Text(
+                  'Daftar Centang',
+                  style: styleBtn,
+                ), //`Text` to display
+                onPressed: () {
+                  Navigator.pop(c, true);
+                  Navigator.push(
+                    c,
+                    MaterialPageRoute(builder: (c) => new FormListPage(id: 0)),
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
