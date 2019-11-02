@@ -14,50 +14,119 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  NotesBloc _notesBloc;
   String _activemenu = 'Catatan';
+  List _selectedNote = [];
+  bool _selectedNoteActive = false;
   @override
   void initState() {
     super.initState();
-    _notesBloc = BlocProvider.of<NotesBloc>(context);
+  }
+  void _setSelectedNote(id)async {
+    var idx = _selectedNote.indexOf(id); 
+    if (idx >-1){
+      _selectedNote.removeAt(idx);
+    }else{
+      _selectedNote.add(id);
+    }
+    _selectedNoteActive = _selectedNote.length > 0 ? true : false;
+    setState(() {
+      _selectedNote = _selectedNote; 
+      _selectedNoteActive = _selectedNoteActive;
+    });
+  }
+  void _removeSelectedNote() async {
+    setState(() {
+      _selectedNote = []; 
+      _selectedNoteActive = false;
+    });
   }
 
-  void _setActiveMenu(e) {
+  void _setActiveMenu(e) async{
     setState(() {
       _activemenu = e;
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
+      drawer: _selectedNoteActive ? null : Drawer(
           child: ListDrawer(
-              activeMenu: _activemenu, setActiveMenu: _setActiveMenu)),
-      appBar: AppBar(
-        title: Text(widget.title),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add_circle),
-            onPressed: () {
-              dialogAddNote(context);
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {},
+              activeMenu: _activemenu, setActiveMenu: _setActiveMenu
           )
-        ],
       ),
-      body: WidgetCatatan()
+      appBar: AppBar(
+        title: _selectedNoteActive ? Row(
+          children: <Widget>[
+            IconButton(
+              icon: Icon(Icons.close),
+              onPressed: _removeSelectedNote,
+            ),
+            Text(_selectedNote.length.toString())
+          ],
+        ) : Text(widget.title),
+        actions: _selectedNoteActive? 
+          <Widget>[
+            
+            IconButton(
+              icon: const Icon(Icons.alarm_add),
+              tooltip: 'Alarm',
+              onPressed: () {
+            
+              },
+            ),
+            IconButton(
+              icon: new Icon(Icons.archive),
+              tooltip: 'Archive',
+              onPressed: () {
+            
+              },
+            ),
+            IconButton(
+              icon: new Icon(Icons.delete),
+              tooltip: 'Delete',
+              onPressed: () {
+            
+              },
+            ),
+          ] : 
+          <Widget>[
+            IconButton(
+              icon: Icon(Icons.add_circle),
+              onPressed: () {
+                dialogAddNote(context);
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {},
+            )
+          ],
+      ),
+      body: WidgetCatatan(
+        setSelectedNote: _setSelectedNote,
+        removeSelectedNote: _removeSelectedNote,
+        selectedNoteActive: _selectedNoteActive,
+        selectedNote: _selectedNote,
+      )
     );
   }
 }
 
 class WidgetCatatan extends StatelessWidget {
+  final setSelectedNote;
+  final removeSelectedNote;
+
+  final List selectedNote;
+  final bool selectedNoteActive;
+  
+  WidgetCatatan(
+    {this.selectedNote,this.selectedNoteActive, this.setSelectedNote, this.removeSelectedNote}
+  );
+  
   @override
   Widget build(BuildContext context) {
-    
     NotesBloc _notesBloc = BlocProvider.of<NotesBloc>(context);
     return Container(
         child: Column(
@@ -81,7 +150,12 @@ class WidgetCatatan extends StatelessWidget {
                     }
 
                     List<NoteComp> notes = snapshot.data;
-                    return GridNoteListWidget(notes);
+                    return GridNoteListWidget(notes,
+                        selectedNote: selectedNote,
+                        setSelectedNote: setSelectedNote,
+                        selectedNoteActive: selectedNoteActive,
+                        removeSelectedNote: removeSelectedNote,
+                    );
                   }
                   return Center(
                     child: CircularProgressIndicator(),

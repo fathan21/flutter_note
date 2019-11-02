@@ -5,7 +5,15 @@ import 'package:note_f/src/ui/form_text.dart';
 
 class GridNoteListWidget extends StatelessWidget {
   final List datas;
-  const GridNoteListWidget(this.datas);
+  final setSelectedNote;
+  final removeSelectedNote;
+  final List selectedNote;
+  final bool selectedNoteActive;
+  
+  GridNoteListWidget(
+      this.datas,
+      {this.selectedNote,this.selectedNoteActive, this.setSelectedNote, this.removeSelectedNote}
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -17,18 +25,27 @@ class GridNoteListWidget extends StatelessWidget {
         var data = datas[index];
         return GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => data.noteCheck.length > 0
-                        ? new FormListPage(id: data.note.id)
-                        : new FormTextPage(id: data.note.id)),
-              );
+              if (selectedNoteActive) {              
+                setSelectedNote(data.note.id);
+              }else{
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => data.noteCheck.length > 0
+                          ? new FormListPage(id: data.note.id)
+                          : new FormTextPage(id: data.note.id)),
+                );
+              }
             },
             onLongPress: (){
-              print("longonmo");
+              setSelectedNote(data.note.id);
             },
-            child: GridNoteItemWidget(data.note, data.noteCheck));
+            child: GridNoteItemWidget(data.note, data.noteCheck,
+              selectedNote: selectedNote,
+              setSelectedNote: setSelectedNote,
+              selectedNoteActive: selectedNoteActive,
+              removeSelectedNote: removeSelectedNote,
+            ));
       }),
     );
   }
@@ -37,7 +54,15 @@ class GridNoteListWidget extends StatelessWidget {
 class GridNoteItemWidget extends StatelessWidget {
   final data;
   final noteCheck;
-  const GridNoteItemWidget(this.data, this.noteCheck);
+  
+  final setSelectedNote;
+  final removeSelectedNote;
+  final List selectedNote;
+  final bool selectedNoteActive;
+
+  GridNoteItemWidget(this.data, this.noteCheck,
+    {this.selectedNote,this.selectedNoteActive, this.setSelectedNote, this.removeSelectedNote}
+  );
 
   Widget _text() {
     return Column(
@@ -57,17 +82,18 @@ class GridNoteItemWidget extends StatelessWidget {
                 ),
               )),
         Flexible(
-            child: new Text(
-          data.content.toString(),
-          maxLines: 13,
-          overflow: TextOverflow.ellipsis,
-          softWrap: false,
-          style: new TextStyle(
-            fontSize: 14.0,
-            fontFamily: 'Roboto',
-            fontWeight: FontWeight.bold,
-          ),
-        )),
+          child: new Text(
+            data.content.toString(),
+            maxLines: 13,
+            overflow: TextOverflow.ellipsis,
+            softWrap: false,
+            style: new TextStyle(
+              fontSize: 14.0,
+              fontFamily: 'Roboto',
+              fontWeight: FontWeight.bold,
+            ),
+          )
+        ),
       ],
     );
   }
@@ -170,10 +196,7 @@ class GridNoteItemWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(5),
       decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.black,
-            width: 10.0
-          ),
+          border: selectedNote.indexOf(data.id) > -1? Border.all(color: ThemeData().textSelectionHandleColor,width: 5.0): Border.all(color: newCl),
           color: newCl,
           borderRadius: BorderRadius.all(Radius.circular(16.0))),
       child: Stack(
