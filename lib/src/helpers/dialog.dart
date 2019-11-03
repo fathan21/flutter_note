@@ -11,13 +11,22 @@ Future<T> _showAlert<T>({BuildContext context, Widget child}) => showDialog<T>(
       builder: (BuildContext context) => child,
     );
 
-Future<bool> showAlert(BuildContext context,{String title,String negativeText = "Cancel",String positiveText = "Confirm",bool onlyPositive = false}) =>
+Future<bool> showAlert(BuildContext context,
+        {String title,
+        String negativeText = "Cancel",
+        String positiveText = "Confirm",
+        bool onlyPositive = false}) =>
     _showAlert<bool>(
       context: context,
-      child: CupertinoAlertDialog(title: Text(title),actions: _buildAlertActions(context, onlyPositive, negativeText, positiveText),),
+      child: CupertinoAlertDialog(
+        title: Text(title),
+        actions: _buildAlertActions(
+            context, onlyPositive, negativeText, positiveText),
+      ),
     );
 
-List<Widget> _buildAlertActions(BuildContext context, bool onlyPositive, String negativeText, String positiveText) {
+List<Widget> _buildAlertActions(BuildContext context, bool onlyPositive,
+    String negativeText, String positiveText) {
   if (onlyPositive) {
     return [
       CupertinoDialogAction(
@@ -111,6 +120,101 @@ class LoadingDialog extends CupertinoAlertDialog {
 
 */
 
+Future<DateTime> dialogRound(BuildContext context, {initialDate}) async {
+  var myColor = Colors.red;
+  return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(32.0))),
+          contentPadding: EdgeInsets.only(top: 10.0),
+          content: Container(
+            width: 300.0,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      "Rate",
+                      style: TextStyle(fontSize: 24.0),
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Icon(
+                          Icons.star_border,
+                          color: myColor,
+                          size: 30.0,
+                        ),
+                        Icon(
+                          Icons.star_border,
+                          color: myColor,
+                          size: 30.0,
+                        ),
+                        Icon(
+                          Icons.star_border,
+                          color: myColor,
+                          size: 30.0,
+                        ),
+                        Icon(
+                          Icons.star_border,
+                          color: myColor,
+                          size: 30.0,
+                        ),
+                        Icon(
+                          Icons.star_border,
+                          color: myColor,
+                          size: 30.0,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 5.0,
+                ),
+                Divider(
+                  color: Colors.grey,
+                  height: 4.0,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 30.0, right: 30.0),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: "Add Review",
+                      border: InputBorder.none,
+                    ),
+                    maxLines: 8,
+                  ),
+                ),
+                InkWell(
+                  child: Container(
+                    padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
+                    decoration: BoxDecoration(
+                      color: myColor,
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(32.0),
+                          bottomRight: Radius.circular(32.0)),
+                    ),
+                    child: Text(
+                      "Rate Product",
+                      style: TextStyle(color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      });
+}
 
 Future dialogAddNote(BuildContext c) => showDialog(
       context: c,

@@ -84,12 +84,12 @@ class DBProvider {
     newNote['type'] =  noteComp.noteCheck.length > 0 ? 'check' :'text';
 
     var batch = db.batch();
-    var note_id = await db.insert('note', newNote);
+    var noteId = await db.insert('note', newNote);
     for (var item in noteComp.noteCheck) {
           if (item.content == null || item.content == ''){
             continue;
           }
-          item.noteId = note_id;
+          item.noteId = noteId;
           var newCheck = item.toJson();
           newCheck['created_at'] = formatted;
           db.insert('note_check', newCheck);
@@ -104,8 +104,8 @@ class DBProvider {
     var noteRes = await db.query('note', where: 'id = ?', whereArgs: [id]);
     var note = noteRes.isNotEmpty ? Note.fromJson(noteRes.first) : null;
     
-    var res_check =  await db.rawQuery('SELECT * FROM note_check WHERE note_id = ?',[note.id]);
-    List<NoteCheck> noteCheck =res_check.isNotEmpty ? res_check.map((note) => NoteCheck.fromJson(note)).toList() : [];
+    var resCheck =  await db.rawQuery('SELECT * FROM note_check WHERE noteId = ?',[note.id]);
+    List<NoteCheck> noteCheck =resCheck.isNotEmpty ? resCheck.map((note) => NoteCheck.fromJson(note)).toList() : [];
     NoteComp noteComp = new NoteComp(note: note,noteCheck: noteCheck );
 
     return noteComp;
@@ -123,14 +123,14 @@ class DBProvider {
     newNote['type'] =  noteComp.noteCheck.length > 0 ? 'check' :'text';
     
     var batch = db.batch();
-    var note_id = newNote['id'];
-    var res = await db.update('note', newNote, where: 'id = ?', whereArgs: [newNote['id']]);
-    await db.rawDelete(" DELETE FROM note_check WHERE note_id =? ", [newNote['id']]);
+    var noteId = newNote['id'];
+    // var res = await db.update('note', newNote, where: 'id = ?', whereArgs: [newNote['id']]);
+    await db.rawDelete(" DELETE FROM note_check WHERE noteId =? ", [newNote['id']]);
     for (var item in noteComp.noteCheck) {
           if (item.content == null || item.content == ''){
             continue;
           }
-          item.noteId = note_id;
+          item.noteId = noteId;
           var newCheck = item.toJson();
           newCheck['created_at'] = formatted;
           db.insert('note_check', newCheck);
@@ -162,12 +162,12 @@ class DBProvider {
   getNotes() async {
     final db = await database;
     var res = await db.query('note');
-    List<Note> notes =res.isNotEmpty ? res.map((note) => Note.fromJson(note)).toList() : [];
+    // List<Note> notes =res.isNotEmpty ? res.map((note) => Note.fromJson(note)).toList() : [];
     List<NoteComp> noteComps =  [];
     for (var item in res) {
       Note nt = Note.fromJson(item);
-      var res_check =  await db.rawQuery('SELECT * FROM note_check WHERE note_id = ?',[nt.id]);
-      List<NoteCheck> noteCheck =res_check.isNotEmpty ? res_check.map((note) => NoteCheck.fromJson(note)).toList() : [];
+      var resCheck =  await db.rawQuery('SELECT * FROM note_check WHERE note_id = ?',[nt.id]);
+      List<NoteCheck> noteCheck =resCheck.isNotEmpty ? resCheck.map((note) => NoteCheck.fromJson(note)).toList() : [];
       NoteComp noteComp = new NoteComp(note: nt,noteCheck: noteCheck );
       noteComps.add(noteComp);
     } 

@@ -128,8 +128,9 @@ class _FormListState extends State<FormListPage> {
               children: <Widget>[
                 FlatButton(
                   onPressed: () {
+                    print(_alrmCtrl);
                     Navigator.pop(c, true);
-                    showAlaramDialog(context, initialDate: _alrmCtrl)
+                    showAlaramDialog(c, initialDate: _alrmCtrl)
                         .then((newAlarm) => {
                               if (newAlarm != null)
                                 {
@@ -177,6 +178,9 @@ class _FormListState extends State<FormListPage> {
         icon: new Icon(Icons.alarm_add),
         tooltip: 'Alarm',
         onPressed: () {
+          print("ASdasd");
+          showAlaramDialog(context);
+          /*
           showAlaramDialog(context, initialDate: _alrmCtrl).then((newAlarm) => {
                 if (newAlarm != null)
                   {
@@ -186,6 +190,7 @@ class _FormListState extends State<FormListPage> {
                     })
                   }
               });
+              */
         },
       ),
       IconButton(

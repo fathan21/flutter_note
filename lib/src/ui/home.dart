@@ -47,7 +47,6 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -221,7 +220,7 @@ class ListDrawer extends StatelessWidget {
     );
   }
 
-  List<Widget> ListMyWidgets(context) {
+  List<Widget> listMyWidgets(context) {
     List<Widget> list = new List();
     list.add(Container(
       height: 90.0,
@@ -261,7 +260,7 @@ class ListDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      children: ListMyWidgets(context),
+      children: listMyWidgets(context),
     );
   }
 }
