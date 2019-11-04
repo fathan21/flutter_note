@@ -96,6 +96,7 @@ class _FormTextState extends State<FormTextPage> {
                     Navigator.pop(c, true);
                     showAlaramDialog(context, initialDate: _alrmCtrl)
                         .then((newAlarm) => {
+                              
                               if (newAlarm != null)
                                 {
                                   setState(() {
@@ -143,14 +144,8 @@ class _FormTextState extends State<FormTextPage> {
         tooltip: 'Alarm',
         onPressed: () {
           showAlaramDialog(context, initialDate: _alrmCtrl).then((newAlarm) => {
-                if (newAlarm != null)
-                  {
-                    setState(() {
-                      setAlarm = 1;
-                      _alrmCtrl = newAlarm;
-                    })
-                  }
-              });
+              print(newAlarm)
+          });
         },
       ),
       IconButton(

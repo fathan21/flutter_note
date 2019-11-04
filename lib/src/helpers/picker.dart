@@ -54,11 +54,26 @@ Future colorPicker(BuildContext context,
 Future showAlaramDialog(BuildContext context, {initialDate}) async {
   showDialog(
       context: context,
-      builder: (BuildContext context) => new AlaramDialog().show(context)
-    );
+      builder: (_) {
+              return MyDialog(
+                onSave: (e){
+                  print(e);
+                }
+              );
+            });
 }
 
-class AlaramDialog {
+class MyDialog extends StatefulWidget {
+  MyDialog({
+    this.onSave,
+  });
+  final onSave;
+  @override
+  _MyDialogState createState() => new _MyDialogState();
+}
+
+class _MyDialogState extends State<MyDialog> {
+  
   final teFirstName = TextEditingController();
   final teLastFirstName = TextEditingController();
   final teDOB = TextEditingController();
@@ -75,6 +90,7 @@ class AlaramDialog {
   final optionsType = [
     "Sekali", "Harian","Mingguan","Bulanan"
   ];
+  DateTime initialDate = DateTime.now().add(Duration(hours: 4));
   String initialDateLabel = DateFormat("d MMMM").format(DateTime.now().add(Duration(hours: 4)));
   String initialTimeLabel = DateFormat("HH : mm").format(DateTime.now().add(Duration(hours: 4)));
 
@@ -82,11 +98,102 @@ class AlaramDialog {
     color: Colors.blue,
     decoration: TextDecoration.underline,
   );
+    Widget getTextField(
+      String inputBoxName, TextEditingController inputBoxController) {
+    var loginBtn = new Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: new TextFormField(
+        controller: inputBoxController,
+        decoration: new InputDecoration(
+          hintText: inputBoxName,
+        ),
+      ),
+    );
 
-  Widget show(BuildContext context,) {
-      var d =  
-      new Dialog(
-        child: Padding(
+    return loginBtn;
+  }
+
+  Widget getBtnAction(context){
+    return Container(
+      margin: EdgeInsets.only(top: 20.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        // crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          isEdit?FlatButton(
+            onPressed: (){
+
+            },
+            child: Text("Hapus"),
+          ):Text(" "),
+          Expanded(
+            flex: 2,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                FlatButton(
+                  onPressed: (){
+                    Navigator.pop(context);
+                  },
+                  child: Text("Batal"),
+                ),
+                FlatButton(
+                  onPressed: (){
+                    widget.onSave(initialDate);
+                    Navigator.of(context).pop();
+                  },
+                  color: ThemeData().primaryColor,
+                  child: Text("Simpan"),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Future generateDate(context,label) async{
+    // "Hari ini", "Besok","Minggu depan","Pilih tanggal"
+      switch (label) {
+        case "Hari ini":
+          setState(() {
+            initialDate = DateTime.now().add(Duration(hours: 4));
+            initialDateLabel = DateFormat("d MMMM").format(DateTime.now().add(Duration(hours: 4)));
+            initialTimeLabel = DateFormat("HH : mm").format(DateTime.now().add(Duration(hours: 4)));
+          });
+
+          break;
+        case "Besok":
+          setState(() {
+            initialDate = initialDate.add(Duration(days: 1));
+            initialDateLabel = DateFormat("d MMMM").format(initialDate);
+            initialTimeLabel = DateFormat("HH : mm").format(initialDate); 
+          });
+          break;
+          case "Minggu depan":
+            setState(() {
+              initialDate = initialDate.add(Duration(days: 7));
+              initialDateLabel = DateFormat("d MMMM").format(initialDate);
+              initialTimeLabel = DateFormat("HH : mm").format(initialDate); 
+            });
+          break;
+        default:
+          selectedDate(context, initialDate: initialDate).then((date) => {
+            setState(() {
+              initialDate = date;
+              initialDateLabel = DateFormat("d MMMM").format(date); 
+            })
+          });
+      }
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Padding(
           padding: EdgeInsets.all(16.0),
           child: new Column(
             mainAxisSize: MainAxisSize.min,
@@ -109,7 +216,7 @@ class AlaramDialog {
                   );
                 }).toList(),
                 onChanged: (e) {
-                  print(e);
+                  generateDate(context,e);
                 },
               ),
               new DropdownButton<String>(
@@ -144,69 +251,11 @@ class AlaramDialog {
                   print(e);
                 },
               ),
-              getBtnAction(),
+              getBtnAction(context),
               
             ],
           ),
         ),
-        
-      );
-      return d;
-  }
-
-  Widget getTextField(
-      String inputBoxName, TextEditingController inputBoxController) {
-    var loginBtn = new Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: new TextFormField(
-        controller: inputBoxController,
-        decoration: new InputDecoration(
-          hintText: inputBoxName,
-        ),
-      ),
-    );
-
-    return loginBtn;
-  }
-
-  Widget getBtnAction(){
-    return Container(
-      margin: EdgeInsets.only(top: 20.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        // crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          isEdit?FlatButton(
-            onPressed: (){
-
-            },
-            child: Text("Hapus"),
-          ):Text(" "),
-          Expanded(
-            flex: 2,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                FlatButton(
-                  onPressed: (){
-
-                  },
-                  child: Text("Batal"),
-                ),
-                FlatButton(
-                  onPressed: (){
-
-                  },
-                  color: ThemeData().primaryColor,
-                  child: Text("Simpan"),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
     );
   }
 }
-
