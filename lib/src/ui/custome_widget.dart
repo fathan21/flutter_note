@@ -69,9 +69,9 @@ class GridNoteItemWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         (data.title == '' || data.title == null
-            ? null
+            ? Text(" ")
             : Container(
-                margin: EdgeInsets.only(bottom: 10, right: 15),
+                margin: EdgeInsets.only(bottom: 0, right: 15),
                 child: Text(
                   data.title.toString(),
                   style: TextStyle(
@@ -103,13 +103,13 @@ class GridNoteItemWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         (data.title == '' || data.title == null
-            ? null
+            ? Text(" ")
             : Container(
-                margin: EdgeInsets.only(bottom: 10, right: 15),
+                margin: EdgeInsets.only(bottom: 0, right: 15),
                 child: Text(
                   data.title.toString(),
                   style: TextStyle(
-                    fontSize: 25,
+                    fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -118,7 +118,7 @@ class GridNoteItemWidget extends StatelessWidget {
         Expanded(
           child: ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.only(top: 0.0, left: 1.0),
               itemCount: noteCheck.length,
               itemBuilder: (BuildContext context, int index) {
                 return _typeListItem(context, noteCheck[index], index);

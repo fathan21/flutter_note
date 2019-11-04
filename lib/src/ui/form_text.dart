@@ -21,9 +21,10 @@ class _FormTextState extends State<FormTextPage> {
   TextEditingController _contentCtrl = new TextEditingController();
   NotesBloc _notesBloc;
   Color _colorCtrl = ThemeData().primaryColor;
-  DateTime _alrmCtrl = new DateTime.now().add(Duration(hours: 2));
+  DateTime _alrmCtrl;
   int setAlarm = 0;
   String _datePost = " ";
+  int _alaramTypeCtrl;
 
   Note _note = new Note();
   @override
@@ -41,11 +42,15 @@ class _FormTextState extends State<FormTextPage> {
       });
     } else {
       _note = await _notesBloc.inGetNote(id);
+      
+      print(_note.toJson());
+      print("type");
       _titleCtrl.text = _note.title;
       _contentCtrl.text = _note.content;
       var formattedString =
           _note.updatedAt != null ? _note.updatedAt : _note.createdAt;
       setState(() {
+        _alaramTypeCtrl = _note.alarmType;
         _datePost = dateformat.DateFormat("kk:mm, dd MMM yy ")
             .format(DateTime.parse(formattedString));
         _colorCtrl = new Color(_note.color.toInt());
@@ -60,10 +65,11 @@ class _FormTextState extends State<FormTextPage> {
   Future _saveNote() async {
     _note.content = _contentCtrl.text.toString();
     var title = _titleCtrl.text == '' || _titleCtrl.text == null
-        ? null
+        ? ''
         : _titleCtrl.text;
     _note.title = title.toString();
     _note.color = _colorCtrl.value;
+    _note.alarmType = _alaramTypeCtrl;
     _note.alarm = setAlarm == 1 ? _alrmCtrl.toString() : null;
 
     if (widget.id != 0) {
@@ -79,50 +85,21 @@ class _FormTextState extends State<FormTextPage> {
     _notesBloc.inDeleteNote.add(widget.id);
     Navigator.pop(context);
   }
-
-  Future _dialogAlarm() async => showDialog(
-        context: context,
-        builder: (BuildContext c) {
-          // return object of type Dialog
-          const styleBtn = TextStyle(fontSize: 20);
-          return AlertDialog(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              // verticalDirection: VerticalDirection.down,
-              children: <Widget>[
-                FlatButton(
-                  onPressed: () {
-                    Navigator.pop(c, true);
-                    showAlaramDialog(context, initialDate: _alrmCtrl)
-                        .then((newAlarm) => {
-                              
-                              if (newAlarm != null)
-                                {
-                                  setState(() {
-                                    setAlarm = 1;
-                                    _alrmCtrl = newAlarm;
-                                  })
-                                }
-                            });
-                  },
-                  child: const Text('Ubah', style: styleBtn),
-                ),
-                FlatButton(
-                  onPressed: () {
-                    setState(() {
-                      setAlarm = 0;
-                    });
-                    Navigator.pop(c, true);
-                  },
-                  child: const Text('Hapus', style: styleBtn),
-                ),
-              ],
-            ),
-          );
-        },
-      );
-  
+   _setAlaram(newAlarm, alaramType){
+    if(newAlarm != null){
+      setState(() {
+        setAlarm = 1;
+        _alrmCtrl = newAlarm;
+        _alaramTypeCtrl = alaramType;
+      });
+    }else{
+      setState(() {
+        setAlarm = 0;
+        _alrmCtrl = null;
+        _alaramTypeCtrl = null;
+      });
+    }
+  }
   List<Widget> actionList() {
     return [
       IconButton(
@@ -143,9 +120,7 @@ class _FormTextState extends State<FormTextPage> {
         icon: new Icon(Icons.alarm_add),
         tooltip: 'Alarm',
         onPressed: () {
-          showAlaramDialog(context, initialDate: _alrmCtrl).then((newAlarm) => {
-              print(newAlarm)
-          });
+          showAlaramDialog(context, initialDate: _alrmCtrl,setAlaram: _setAlaram, alaramType: _alaramTypeCtrl);
         },
       ),
       IconButton(
@@ -176,7 +151,9 @@ class _FormTextState extends State<FormTextPage> {
                   colorCtrl: _colorCtrl,
                   setAlarm: setAlarm,
                   alrmCtrl: _alrmCtrl,
-                  dialogAlarm: _dialogAlarm),
+                  dialogAlarm: (){
+                    showAlaramDialog(context,initialDate: _alrmCtrl, setAlaram: _setAlaram, alaramType: _alaramTypeCtrl);
+                  }),
               InputContainer(
                 ctrl: _titleCtrl,
                 color: _colorCtrl,

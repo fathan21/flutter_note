@@ -22,9 +22,10 @@ class _FormListState extends State<FormListPage> {
   TextEditingController _contentCtrl = new TextEditingController();
   NotesBloc _notesBloc;
   Color _colorCtrl = ThemeData().primaryColor;
-  DateTime _alrmCtrl = new DateTime.now().add(Duration(hours: 2));
+  DateTime _alrmCtrl; // = new DateTime.now().add(Duration(hours: 2));
   int setAlarm = 0;
   String _datePost = " ";
+  int _alaramTypeCtrl;
 
   Note _note = new Note();
   List<NoteCheck> _noteDetail = [new NoteCheck()];
@@ -46,12 +47,16 @@ class _FormListState extends State<FormListPage> {
       _note = noteComp.note;
       _titleCtrl.text = _note.title;
       _contentCtrl.text = _note.content;
-      var formattedString = _note.updatedAt != null ? _note.updatedAt : _note.createdAt;
+      var formattedString =
+          _note.updatedAt != null ? _note.updatedAt : _note.createdAt;
 
-      if(_note.type == 'check'){
+      if (_note.type == 'check') {
         noteComp.noteCheck.add(new NoteCheck());
       }
+      print(_note.toJson());
+      print("type");
       setState(() {
+        _alaramTypeCtrl = _note.alarmType;
         _noteDetail = noteComp.noteCheck;
         _datePost = dateformat.DateFormat("kk:mm, dd MMM yy ")
             .format(DateTime.parse(formattedString));
@@ -67,46 +72,48 @@ class _FormListState extends State<FormListPage> {
   Future _saveNote() async {
     _note.content = _contentCtrl.text.toString();
     var title = _titleCtrl.text == '' || _titleCtrl.text == null
-        ? null
+        ? ''
         : _titleCtrl.text;
     _note.title = title.toString();
     _note.color = _colorCtrl.value;
+    _note.alarmType = _alaramTypeCtrl;
     _note.alarm = setAlarm == 1 ? _alrmCtrl.toString() : null;
 
     var noteComp = new NoteComp();
-        noteComp.note = _note;
-        noteComp.noteCheck = _noteDetail;
+    noteComp.note = _note;
+    noteComp.noteCheck = _noteDetail;
     if (widget.id != 0) {
       _note.id = widget.id;
-      
       _notesBloc.inSaveNoteComp.add(noteComp);
     } else {
       _notesBloc.inAddNoteComp.add(noteComp);
     }
     Navigator.pop(context);
   }
+
   Future _nodeDetailAdd() async {
     _noteDetail.add(new NoteCheck());
     setState(() {
-     _noteDetail = _noteDetail; 
+      _noteDetail = _noteDetail;
     });
   }
-  
-  Future _noteDetailChange(type,i,val) async {
-    if(type == 'content'){
+
+  Future _noteDetailChange(type, i, val) async {
+    if (type == 'content') {
       _noteDetail[i].content = val;
     }
-    if(type == 'isChecked'){
-      _noteDetail[i].isChecked = val == true?1:0;
+    if (type == 'isChecked') {
+      _noteDetail[i].isChecked = val == true ? 1 : 0;
     }
     setState(() {
-     _noteDetail = _noteDetail; 
+      _noteDetail = _noteDetail;
     });
   }
+
   Future _nodeDetailRemove(i) async {
     _noteDetail.removeAt(i);
     setState(() {
-     _noteDetail = _noteDetail; 
+      _noteDetail = _noteDetail;
     });
   }
 
@@ -115,49 +122,23 @@ class _FormListState extends State<FormListPage> {
     Navigator.pop(context);
   }
 
-  Future _dialogAlarm() async => showDialog(
-        context: context,
-        builder: (BuildContext c) {
-          // return object of type Dialog
-          const styleBtn = TextStyle(fontSize: 20);
-          return AlertDialog(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              // verticalDirection: VerticalDirection.down,
-              children: <Widget>[
-                FlatButton(
-                  onPressed: () {
-                    print(_alrmCtrl);
-                    Navigator.pop(c, true);
-                    showAlaramDialog(c, initialDate: _alrmCtrl)
-                        .then((newAlarm) => {
-                              if (newAlarm != null)
-                                {
-                                  setState(() {
-                                    setAlarm = 1;
-                                    _alrmCtrl = newAlarm;
-                                  })
-                                }
-                            });
-                  },
-                  child: const Text('Ubah', style: styleBtn),
-                ),
-                FlatButton(
-                  onPressed: () {
-                    setState(() {
-                      setAlarm = 0;
-                    });
-                    Navigator.pop(c, true);
-                  },
-                  child: const Text('Hapus', style: styleBtn),
-                ),
-              ],
-            ),
-          );
-        },
-      );
-  
+
+   _setAlaram(newAlarm, alaramType){
+    if(newAlarm != null){
+      setState(() {
+        setAlarm = 1;
+        _alrmCtrl = newAlarm;
+        _alaramTypeCtrl = alaramType;
+      });
+    }else{
+      setState(() {
+        setAlarm = 0;
+        _alrmCtrl = null;
+        _alaramTypeCtrl = null;
+      });
+    }
+  }
+
   List<Widget> actionList() {
     return [
       IconButton(
@@ -178,19 +159,7 @@ class _FormListState extends State<FormListPage> {
         icon: new Icon(Icons.alarm_add),
         tooltip: 'Alarm',
         onPressed: () {
-          print("ASdasd");
-          showAlaramDialog(context);
-          /*
-          showAlaramDialog(context, initialDate: _alrmCtrl).then((newAlarm) => {
-                if (newAlarm != null)
-                  {
-                    setState(() {
-                      setAlarm = 1;
-                      _alrmCtrl = newAlarm;
-                    })
-                  }
-              });
-              */
+          showAlaramDialog(context,initialDate: _alrmCtrl, setAlaram: _setAlaram, alaramType: _alaramTypeCtrl);
         },
       ),
       IconButton(
@@ -221,7 +190,9 @@ class _FormListState extends State<FormListPage> {
                   colorCtrl: _colorCtrl,
                   setAlarm: setAlarm,
                   alrmCtrl: _alrmCtrl,
-                  dialogAlarm: _dialogAlarm),
+                  dialogAlarm: (){
+                    showAlaramDialog(context,initialDate: _alrmCtrl, setAlaram: _setAlaram,alaramType: _alaramTypeCtrl);
+                  }),
               InputContainer(
                 ctrl: _titleCtrl,
                 color: _colorCtrl,

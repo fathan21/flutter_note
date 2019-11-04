@@ -104,7 +104,7 @@ class DBProvider {
     var noteRes = await db.query('note', where: 'id = ?', whereArgs: [id]);
     var note = noteRes.isNotEmpty ? Note.fromJson(noteRes.first) : null;
     
-    var resCheck =  await db.rawQuery('SELECT * FROM note_check WHERE noteId = ?',[note.id]);
+    var resCheck =  await db.rawQuery('SELECT * FROM note_check WHERE note_id = ?',[note.id]);
     List<NoteCheck> noteCheck =resCheck.isNotEmpty ? resCheck.map((note) => NoteCheck.fromJson(note)).toList() : [];
     NoteComp noteComp = new NoteComp(note: note,noteCheck: noteCheck );
 
@@ -115,7 +115,7 @@ class DBProvider {
     final db = await database;
 
     final newNote = noteComp.note.toJson();
-
+    print(newNote);
     var now = new DateTime.now();
     var formatter = new DateFormat('yyyy-MM-dd HH:mm:ss');
     String formatted = formatter.format(now);
@@ -124,8 +124,8 @@ class DBProvider {
     
     var batch = db.batch();
     var noteId = newNote['id'];
-    // var res = await db.update('note', newNote, where: 'id = ?', whereArgs: [newNote['id']]);
-    await db.rawDelete(" DELETE FROM note_check WHERE noteId =? ", [newNote['id']]);
+    await db.update('note', newNote, where: 'id = ?', whereArgs: [newNote['id']]);
+    await db.rawDelete(" DELETE FROM note_check WHERE note_id =? ", [newNote['id']]);
     for (var item in noteComp.noteCheck) {
           if (item.content == null || item.content == ''){
             continue;
