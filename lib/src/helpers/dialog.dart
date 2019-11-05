@@ -2,6 +2,7 @@ import 'dart:async' show Future;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:note_f/src/ui/example.dart';
 import 'package:note_f/src/ui/form_list.dart';
 import 'package:note_f/src/ui/form_text.dart';
 
@@ -256,6 +257,20 @@ Future dialogAddNote(BuildContext c) => showDialog(
                   Navigator.push(
                     c,
                     MaterialPageRoute(builder: (c) => new FormListPage(id: 0)),
+                  );
+                },
+              ),
+              FlatButton.icon(
+                icon: Icon(Icons.image), //`Icon` to display
+                label: Text(
+                  'Gambar',
+                  style: styleBtn,
+                ), //`Text` to display
+                onPressed: () {
+                  Navigator.pop(c, true);
+                  Navigator.push(
+                    c,
+                    MaterialPageRoute(builder: (c) => new Example()),
                   );
                 },
               ),
