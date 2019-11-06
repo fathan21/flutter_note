@@ -94,7 +94,7 @@ class _ExampleSate extends State<Example> {
       });
       Navigator.pop(context);
     Timer(Duration(seconds: 3), () {
-      print("print after every 3 seconds");
+      // print("print after every 3 seconds");
     });
   }
 

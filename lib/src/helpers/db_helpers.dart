@@ -52,7 +52,7 @@ class DBProvider {
     // exists = false;
     if (!exists) {
       // Should happen only the first time you launch your application
-      print("Creating new copy from asset");
+      // print("Creating new copy from asset");
 
       // Make sure the parent directory exists
       try {
@@ -67,7 +67,7 @@ class DBProvider {
       // Write and flush the bytes written
       await File(path).writeAsBytes(bytes, flush: true);
     } else {
-      print("Opening existing database");
+      // print("Opening existing database");
     }
     // open the database
     var db = await openDatabase(path, readOnly: false);
@@ -115,7 +115,7 @@ class DBProvider {
     final db = await database;
 
     final newNote = noteComp.note.toJson();
-    print(newNote);
+    // print(newNote);
     var now = new DateTime.now();
     var formatter = new DateFormat('yyyy-MM-dd HH:mm:ss');
     String formatted = formatter.format(now);
@@ -155,7 +155,7 @@ class DBProvider {
     newNote['type'] = 'text';
     var res = await db.insert('note', newNote);
     
-    print(res);
+    // print(res);
     return res;
   }
 

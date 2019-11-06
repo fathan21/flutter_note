@@ -29,9 +29,12 @@ class _FormListState extends State<FormListPage> {
 
   Note _note = new Note();
   List<NoteCheck> _noteDetail = [new NoteCheck()];
+
+  List textEditingListCtrl = [];
   @override
   void initState() {
     super.initState();
+    textEditingListCtrl = [];
     _notesBloc = BlocProvider.of<NotesBloc>(context);
     _getNote(widget.id);
   }
@@ -53,8 +56,6 @@ class _FormListState extends State<FormListPage> {
       if (_note.type == 'check') {
         noteComp.noteCheck.add(new NoteCheck());
       }
-      print(_note.toJson());
-      print("type");
       setState(() {
         _alaramTypeCtrl = _note.alarmType;
         _noteDetail = noteComp.noteCheck;
@@ -65,7 +66,13 @@ class _FormListState extends State<FormListPage> {
           _alrmCtrl = DateTime.parse(_note.alarm);
           setAlarm = 1;
         }
+        
+        noteComp.noteCheck.forEach((item) {
+          var textEditingController = new TextEditingController(text: item.content);
+          textEditingListCtrl.add(textEditingController);
+        });
       });
+      
     }
   }
 
@@ -78,7 +85,10 @@ class _FormListState extends State<FormListPage> {
     _note.color = _colorCtrl.value;
     _note.alarmType = _alaramTypeCtrl;
     _note.alarm = setAlarm == 1 ? _alrmCtrl.toString() : null;
-
+    
+    for (var i = 0; i < _noteDetail.length; i++) {
+        _noteDetail[i].content = textEditingListCtrl[i].text; 
+    }
     var noteComp = new NoteComp();
     noteComp.note = _note;
     noteComp.noteCheck = _noteDetail;
@@ -95,6 +105,8 @@ class _FormListState extends State<FormListPage> {
     _noteDetail.add(new NoteCheck());
     setState(() {
       _noteDetail = _noteDetail;
+      var textEditingController = new TextEditingController(text: '');
+      textEditingListCtrl.add(textEditingController);
     });
   }
 
@@ -112,6 +124,10 @@ class _FormListState extends State<FormListPage> {
 
   Future _nodeDetailRemove(i) async {
     _noteDetail.removeAt(i);
+    // print(textEditingListCtrl.length);
+    var d = textEditingListCtrl.removeAt(i);
+      // textEditingListCtrl = d;
+    
     setState(() {
       _noteDetail = _noteDetail;
     });
@@ -177,6 +193,7 @@ class _FormListState extends State<FormListPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: _colorCtrl,
@@ -207,6 +224,7 @@ class _FormListState extends State<FormListPage> {
                   listItemChange: _noteDetailChange,
                   listItemAdd: _nodeDetailAdd,
                   listItemRemove: _nodeDetailRemove,
+                  textEditingListCtrl:textEditingListCtrl,
                   hightFromScreen: 1.5),
             ],
           ),

@@ -43,8 +43,8 @@ class _FormTextState extends State<FormTextPage> {
     } else {
       _note = await _notesBloc.inGetNote(id);
       
-      print(_note.toJson());
-      print("type");
+      // print(_note.toJson());
+      // print("type");
       _titleCtrl.text = _note.title;
       _contentCtrl.text = _note.content;
       var formattedString =

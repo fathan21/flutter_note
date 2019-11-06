@@ -140,7 +140,7 @@ class WidgetCatatan extends StatelessWidget {
                 builder: (BuildContext context,
                     AsyncSnapshot<List<NoteComp>> snapshot) {
                   // Make sure data exists and is actually loaded
-                  // print(snapshot.hasError);
+                  // // print(snapshot.hasError);
                   if (snapshot.hasData) {
                     // If there are no notes (data), display this message.
 

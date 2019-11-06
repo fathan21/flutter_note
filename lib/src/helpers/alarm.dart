@@ -106,6 +106,6 @@ class Alaram {
         platformChannelSpecifics,
         payload: 'Default_Sound');
 
-    print('sceduelu notif ' + scheduledNotificationDateTime.toString());
+    // print('sceduelu notif ' + scheduledNotificationDateTime.toString());
   }
 }

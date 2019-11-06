@@ -147,6 +147,7 @@ class GridNoteItemWidget extends StatelessWidget {
           flex: 2,
           child: Text(
             noteCheck[i].content != null ? noteCheck[i].content : '',
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
                 fontSize: 12.0,
                 decorationStyle: TextDecorationStyle.double,

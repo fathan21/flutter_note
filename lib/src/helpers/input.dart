@@ -15,6 +15,7 @@ class InputContainer extends StatelessWidget {
   final listItemAdd;
   final listItemRemove;
   final listItemChange;
+  final textEditingListCtrl;
   const InputContainer({
     this.ctrl,
     this.maxline = 1,
@@ -27,6 +28,7 @@ class InputContainer extends StatelessWidget {
     this.listItemAdd,
     this.listItemChange,
     this.listItemRemove,
+    this.textEditingListCtrl,
   });
 
   Widget _typeText(context) {
@@ -53,10 +55,6 @@ class InputContainer extends StatelessWidget {
               Container(
                 alignment: Alignment.center,
                 width: 50.0,
-              ),
-              Container(
-                alignment: Alignment.center,
-                width: 50.0,
                 child: IconButton(
                   icon: Icon(Icons.add),
                   tooltip: 'Tambah',
@@ -72,7 +70,7 @@ class InputContainer extends StatelessWidget {
               ),
             ],
           ),
-          /*
+          
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.vertical,
@@ -81,7 +79,7 @@ class InputContainer extends StatelessWidget {
               itemBuilder: (BuildContext context, int i) =>_typeListItem(context, listItem[i], i),
             ),
           ),
-          */
+          /*
           Expanded(
             child: FormListDrag(
               type: 'list',
@@ -94,6 +92,7 @@ class InputContainer extends StatelessWidget {
               hightFromScreen: 1.5
             ),
           )
+          */
         ],
       ),
     );
@@ -109,15 +108,6 @@ class InputContainer extends StatelessWidget {
         Container(
           alignment: Alignment.center,
           width: 50.0,
-          child: IconButton(
-            icon: Icon(Icons.menu),
-            tooltip: 'Pindah',
-            onPressed: () {},
-          ),
-        ),
-        Container(
-          alignment: Alignment.center,
-          width: 50.0,
           child: Checkbox(
             value: listItem[i].isChecked == 1?true:false,
             onChanged: (bool val) {
@@ -127,11 +117,13 @@ class InputContainer extends StatelessWidget {
         ),
         Expanded(
             flex: 2,
-            child: TextField(
-              controller: controller,
+            child: TextFormField(
+              // key: UniqueKey(),
+              controller: textEditingListCtrl.isNotEmpty ?textEditingListCtrl[i]:null,
+              // initialValue: "sdas",
               maxLines: null,
               onChanged: (val){
-                listItemChange('content',i,val);
+                // listItemChange('content',i,val);
               },
               decoration: InputDecoration(
                 
@@ -361,7 +353,9 @@ class _FormListDragState extends State<FormListDrag> {
           child: IconButton(
             icon: Icon(Icons.menu),
             tooltip: 'Pindah',
-            onPressed: () {},
+            onPressed: () {
+              
+            },
           ),
         ),
         Container(

@@ -118,8 +118,8 @@ class _MyDialogState extends State<MyDialog> {
     initialDate = widget.initialDate == null? DateTime.now().add(Duration(hours: 4)): widget.initialDate;
     initialDateLabel = DateFormat("d MMMM").format(initialDate);
     initialTimeLabel = DateFormat("HH : mm").format(initialDate);
-    print(alaramType);
-    print(widget.alaramType);
+    // print(alaramType);
+    // print(widget.alaramType);
   }
   Widget getTextField(
       String inputBoxName, TextEditingController inputBoxController) {
