@@ -80,6 +80,9 @@ class _ExampleSate extends State<Example> {
     Directory tempDir = await getTemporaryDirectory();
     String tempPath = tempDir.path;
 
+    if(selected == null){
+      return;
+    }
     // copy the file to a new path
     final File newImage = await selected.copy('$appDocPath/img/image1.png');
     setState(() {

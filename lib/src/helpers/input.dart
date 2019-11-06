@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as prefix0;
+import 'package:reorderables/reorderables.dart';
 
 class InputContainer extends StatelessWidget {
   final ctrl;
@@ -71,12 +72,26 @@ class InputContainer extends StatelessWidget {
               ),
             ],
           ),
+          /*
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
               itemCount: listItem.length,
               itemBuilder: (BuildContext context, int i) =>_typeListItem(context, listItem[i], i),
+            ),
+          ),
+          */
+          Expanded(
+            child: FormListDrag(
+              type: 'list',
+              color: color,
+              maxline: null,
+              listItem: listItem,
+              listItemChange: listItemChange,
+              listItemAdd: listItemAdd,
+              listItemRemove: listItemRemove,
+              hightFromScreen: 1.5
             ),
           )
         ],
@@ -289,3 +304,137 @@ class InputFullBodyWidget extends StatelessWidget {
   }
 }
 */
+
+class FormListDrag extends StatefulWidget {
+  final ctrl;
+  final maxline;
+  final placeholder;
+  final color;
+  final fontSize;
+  final hightFromScreen;
+  final type;
+
+  final listItem;
+  final listItemAdd;
+  final listItemRemove;
+  final listItemChange;
+  const FormListDrag({
+    this.ctrl,
+    this.maxline = 1,
+    this.placeholder = " Text",
+    this.color = Colors.amber,
+    this.fontSize = 16.0,
+    this.hightFromScreen,
+    this.type = 'text',
+    this.listItem,
+    this.listItemAdd,
+    this.listItemChange,
+    this.listItemRemove,
+  });
+  @override
+  _FormListDragState createState() => _FormListDragState();
+}
+
+class _FormListDragState extends State<FormListDrag> {
+  List<Widget> _rows;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    /*
+    
+    */
+    
+  }
+  
+  Widget _itemRow( data, i) {
+    TextEditingController controller = TextEditingController(
+      text: data.content != null?data.content:''
+    );
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          alignment: Alignment.center,
+          width: 50.0,
+          child: IconButton(
+            icon: Icon(Icons.menu),
+            tooltip: 'Pindah',
+            onPressed: () {},
+          ),
+        ),
+        Container(
+          alignment: Alignment.center,
+          width: 50.0,
+          child: Checkbox(
+            value: widget.listItem[i].isChecked == 1?true:false,
+            onChanged: (bool val) {
+                widget.listItemChange('isChecked',i,val);
+            },
+          ),
+        ),
+        Expanded(
+            flex: 2,
+            child: TextFormField(
+              controller: controller,
+              maxLines: null,
+              onChanged: (val){
+                widget.listItemChange('content',i,val);
+              },
+              decoration: InputDecoration(
+                
+              ),
+              style: TextStyle(
+                      decoration: widget.listItem[i].isChecked == 1?TextDecoration.lineThrough:TextDecoration.none
+                    ),
+            )),
+        Container(
+          alignment: Alignment.center,
+          width: 50.0,
+          child: IconButton(
+            icon: Icon(Icons.delete),
+            tooltip: 'Pindah',
+            onPressed: () {
+              widget.listItemRemove(i);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    void _onReorder(int oldIndex, int newIndex) {
+      setState(() {
+        Widget row = _rows.removeAt(oldIndex);
+        _rows.insert(newIndex, row);
+      });
+    }
+    _rows = [];
+    for (var i = 0; i < widget.listItem.length; i++) {
+      _rows.add(_itemRow(widget.listItem[i],i));
+    }
+    // Make sure there is a scroll controller attached to the scroll view that contains ReorderableSliverList.
+    // Otherwise an error will be thrown.
+    ScrollController _scrollController = PrimaryScrollController.of(context) ?? ScrollController();
+
+    return CustomScrollView(
+      // A ScrollController must be included in CustomScrollView, otherwise
+      // ReorderableSliverList wouldn't work
+      controller: _scrollController,
+      slivers: <Widget>[
+        ReorderableSliverList(
+          delegate: ReorderableSliverChildListDelegate(_rows),
+          // or use ReorderableSliverChildBuilderDelegate if needed
+//          delegate: ReorderableSliverChildBuilderDelegate(
+//            (BuildContext context, int index) => _rows[index],
+//            childCount: _rows.length
+//          ),
+          onReorder: _onReorder,
+        )
+      ],
+    );
+  }
+}

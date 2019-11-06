@@ -229,7 +229,7 @@ class ListDrawer extends StatelessWidget {
       color: ThemeData().primaryColor,
       child: Text(
         "Notepad",
-        style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
+        style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold, color: Colors.white),
       ),
     ));
     // activeMenu, menu,borderBottom

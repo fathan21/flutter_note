@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:note_f/src/helpers/dialog.dart';
 import 'package:note_f/src/ui/form_list.dart';
 import 'package:note_f/src/ui/form_text.dart';
@@ -69,13 +70,13 @@ class GridNoteItemWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         (data.title == '' || data.title == null
-            ? Text(" ")
+            ? Text(" ", style: TextStyle(fontSize: 1.0),)
             : Container(
-                margin: EdgeInsets.only(bottom: 0, right: 15),
+                margin: EdgeInsets.only(bottom: 10.0, right: 15),
                 child: Text(
                   data.title.toString(),
                   style: TextStyle(
-                    fontSize: 25,
+                    fontSize: 18.0,
                     fontWeight: FontWeight.bold,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -103,9 +104,9 @@ class GridNoteItemWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         (data.title == '' || data.title == null
-            ? Text(" ")
+            ? null
             : Container(
-                margin: EdgeInsets.only(bottom: 0, right: 15),
+                margin: EdgeInsets.only(bottom: 10.0, right: 15),
                 child: Text(
                   data.title.toString(),
                   style: TextStyle(
@@ -120,6 +121,7 @@ class GridNoteItemWidget extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.only(top: 0.0, left: 1.0),
               itemCount: noteCheck.length,
+              itemExtent: 20.0,
               itemBuilder: (BuildContext context, int index) {
                 return _typeListItem(context, noteCheck[index], index);
               }),
@@ -134,6 +136,8 @@ class GridNoteItemWidget extends StatelessWidget {
       children: <Widget>[
         Container(
           alignment: Alignment.topCenter,
+          padding: EdgeInsets.all(0.0),
+          margin: EdgeInsets.all(0.0),
           child: Checkbox(
             value: noteCheck[i].isChecked == 1 ? true : false,
             onChanged: null,
@@ -144,6 +148,7 @@ class GridNoteItemWidget extends StatelessWidget {
           child: Text(
             noteCheck[i].content != null ? noteCheck[i].content : '',
             style: TextStyle(
+                fontSize: 12.0,
                 decorationStyle: TextDecorationStyle.double,
                 decoration: noteCheck[i].isChecked == 1
                     ? TextDecoration.lineThrough
@@ -155,13 +160,6 @@ class GridNoteItemWidget extends StatelessWidget {
   }
 
   Widget _alarmWidget() {
-    if (data.alarm == null) {
-      return Positioned(
-        top: -5,
-        right: 0,
-        child: Text(" "),
-      );
-    }
     /*
     DateTime dob = DateTime.parse('1967-10-12');
     Duration dur =  DateTime.now().difference(dob);
@@ -171,14 +169,19 @@ class GridNoteItemWidget extends StatelessWidget {
     DateTime now = DateTime.now();
     DateTime alrmD = DateTime.parse(data.alarm);
     int diffH = alrmD.difference(now).inHours;
-    var L = Icon(Icons.alarm, size: 30);
-    if (diffH < 0) {
-      L = Icon(Icons.alarm_off, size: 30);
-    }
-    return Positioned(
-      top: -5,
-      right: 0,
-      child: L,
+    return Container(
+      padding: EdgeInsets.only(right: 5.0, ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment:  MainAxisAlignment.end,
+        children: <Widget>[
+          Icon(Icons.alarm, size: 25.0,color: Colors.white,),
+          Text(
+            DateFormat("kk:mm, dd MMM").format(alrmD), 
+            style: TextStyle(fontSize: 10.0, color: Colors.white)
+          )
+        ],
+      )
     );
   }
 
@@ -194,17 +197,29 @@ class GridNoteItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     Color newCl = new Color(data.color.toInt());
     return Container(
-      padding: EdgeInsets.all(5),
+      padding: EdgeInsets.only(top:5.0,left:5.0,bottom: 0.0),
       decoration: BoxDecoration(
-          border: selectedNote.indexOf(data.id) > -1? Border.all(color: ThemeData().textSelectionHandleColor,width: 5.0): Border.all(color: newCl),
+          border: selectedNote.indexOf(data.id) > -1? Border.all(color: Colors.black,width: 2.0): Border.all(color: newCl),
           color: newCl,
-          borderRadius: BorderRadius.all(Radius.circular(16.0))),
-      child: Stack(
-        children: <Widget>[_renderWidget(), _alarmWidget()],
+          borderRadius: BorderRadius.all(Radius.circular(16.0))
+          ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            height: data.alarm == null ? 158.0 : 132.0,
+            padding: EdgeInsets.only(bottom: 0.0),
+            child: Stack(
+              children: <Widget>[
+                _renderWidget(),
+              ],
+            ),
+          ),
+          data.alarm == null ? Text('', style: TextStyle(fontSize: 1.0)): _alarmWidget()
+        ],
       ),
-
       // color: newCl,//new Color(data.color.toInt()),
-      margin: EdgeInsets.all(10.0),
+      margin: EdgeInsets.all(5.0),
     );
   }
 }

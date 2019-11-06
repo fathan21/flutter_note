@@ -31,6 +31,7 @@ dependencies:
   share: ^0.6.2+4
   flutter_local_notifications: ^0.8.4
   flutter_material_color_picker: ^1.0.5
+  reorderables: ^0.2.12
   #zefyr: ^0.8.0
   #markdown: ^2.1.1
   image_picker: ^0.6.1+10
