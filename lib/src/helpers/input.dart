@@ -99,9 +99,6 @@ class InputContainer extends StatelessWidget {
   }
 
   Widget _typeListItem(context, data, i) {
-    TextEditingController controller = TextEditingController(
-      text: data.content != null?data.content:''
-    );
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[

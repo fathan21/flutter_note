@@ -41,6 +41,8 @@ class _FormListState extends State<FormListPage> {
 
   Future _getNote(id) async {
     if (id == 0) {
+      var textEditingController = new TextEditingController(text: '');
+      textEditingListCtrl.add(textEditingController);
       setState(() {
         _datePost =
             dateformat.DateFormat("kk:mm, dd MMM yy  ").format(DateTime.now());
@@ -125,7 +127,7 @@ class _FormListState extends State<FormListPage> {
   Future _nodeDetailRemove(i) async {
     _noteDetail.removeAt(i);
     // print(textEditingListCtrl.length);
-    var d = textEditingListCtrl.removeAt(i);
+    textEditingListCtrl.removeAt(i);
       // textEditingListCtrl = d;
     
     setState(() {

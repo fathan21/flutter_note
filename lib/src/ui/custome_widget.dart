@@ -65,13 +65,12 @@ class GridNoteItemWidget extends StatelessWidget {
     {this.selectedNote,this.selectedNoteActive, this.setSelectedNote, this.removeSelectedNote}
   );
 
-  Widget _text() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        (data.title == '' || data.title == null
-            ? Text(" ", style: TextStyle(fontSize: 1.0),)
-            : Container(
+  Widget _title() {
+    var title = data.title;
+    if(title == null || title == ''){
+      return Text('', style: TextStyle(fontSize: 1.0));
+    }
+    return Container(
                 margin: EdgeInsets.only(bottom: 10.0, right: 15),
                 child: Text(
                   data.title.toString(),
@@ -81,7 +80,13 @@ class GridNoteItemWidget extends StatelessWidget {
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
-              )),
+    );
+  }
+  Widget _text() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        _title(),
         Flexible(
           child: new Text(
             data.content.toString(),
@@ -103,19 +108,7 @@ class GridNoteItemWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        (data.title == '' || data.title == null
-            ? null
-            : Container(
-                margin: EdgeInsets.only(bottom: 10.0, right: 15),
-                child: Text(
-                  data.title.toString(),
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              )),
+        _title(),
         Expanded(
           child: ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
@@ -124,7 +117,8 @@ class GridNoteItemWidget extends StatelessWidget {
               itemExtent: 20.0,
               itemBuilder: (BuildContext context, int index) {
                 return _typeListItem(context, noteCheck[index], index);
-              }),
+              }
+          ),
         )
       ],
     );
@@ -167,9 +161,9 @@ class GridNoteItemWidget extends StatelessWidget {
     String differenceInYears = (dur.inDays/365).floor().toString();
     return new Text(differenceInYears + ' years');
     */
-    DateTime now = DateTime.now();
+    // DateTime now = DateTime.now();
     DateTime alrmD = DateTime.parse(data.alarm);
-    int diffH = alrmD.difference(now).inHours;
+    // int diffH = alrmD.difference(now).inHours;
     return Container(
       padding: EdgeInsets.only(right: 5.0, ),
       child: Row(

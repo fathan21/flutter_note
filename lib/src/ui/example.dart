@@ -75,16 +75,16 @@ class _ExampleSate extends State<Example> {
     imageCache.clear();
     // return;
     // getting a directory path for saving
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    String appDocPath = appDocDir.path;
-    Directory tempDir = await getTemporaryDirectory();
-    String tempPath = tempDir.path;
+    // Directory appDocDir = await getApplicationDocumentsDirectory();
+    // String appDocPath = appDocDir.path;
+    // Directory tempDir = await getTemporaryDirectory();
+    // String tempPath = tempDir.path;
 
     if(selected == null){
       return;
     }
     // copy the file to a new path
-    final File newImage = await selected.copy('$appDocPath/img/image1.png');
+    // final File newImage = await selected.copy('$appDocPath/img/image1.png');
     setState(() {
       _image = null;
     });
